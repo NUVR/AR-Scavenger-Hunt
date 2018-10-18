@@ -1,5 +1,6 @@
 Create 3d renderer functions that use a provided Scene object and Renderer object from Three.js
-    - monkey head
-    - cube, spin it
-    - water
-    threejs.org/examples
+- [ ] monkey head
+- [ ] cube, spin it
+- [ ] water
+
+threejs.org/examples

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import SceneRenderer from "./SceneRenderer";
+import SceneRenderer from './SceneRenderer';
+import ThreeSceneProvider from './ThreeSceneProvider';
+import api from './api';
 
 const styles = {
     container: {
@@ -18,18 +20,13 @@ class App extends Component {
         image: null,
     };
 
-    handleFileSelected = ({ image, whiteImage, blackImage }) => {
-        this.setState({ image, whiteImage, blackImage });
-    };
-
     render() {
-        const { image, whiteImage, blackImage } = this.state;
-
         return (
             <MuiThemeProvider>
                 <div style={styles.container}>
-                  {/*This works*/}
-                  <SceneRenderer/>
+                  <ThreeSceneProvider initFn={api.scene.get}>
+                    <SceneRenderer/>
+                  </ThreeSceneProvider>
                 </div>
             </MuiThemeProvider>
         )

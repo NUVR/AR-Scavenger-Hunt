@@ -1,8 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import injectTapEventPlugin from 'react-tap-event-plugin';
+/* global THREEx */
 
-injectTapEventPlugin();
+import { Vector3 } from 'three';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const { ArMarkerControls } = THREEx;
+
+console.log(new Vector3());
+console.log(ArMarkerControls);

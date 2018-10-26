@@ -23,7 +23,6 @@
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
-    "ar.js": "^1.6.2",
     "three": "^0.97.0"
   }
 }

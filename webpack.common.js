@@ -5,7 +5,6 @@ const webpack = require('webpack');
 
 module.exports = {
   entry: {
-    arToolkit: './node_modules/ar.js/three.js/build/ar.js',
     app: './src/index.js',
   },
   plugins: [
@@ -23,7 +22,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        exclude: /node_modules|lib/,
         use: ['eslint-loader'],
       },
     ],

@@ -7,5 +7,6 @@ module.exports = merge(common, {
   devServer: {
     contentBase: './dist',
     hotOnly: true,
+    port: 8080,
   },
 });

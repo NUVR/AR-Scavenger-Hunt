@@ -1,8 +1,6 @@
-/* global THREEx */
+import { THREEx } from '../lib/ar';
 
 import { Vector3 } from 'three';
 
-const { ArMarkerControls } = THREEx;
-
+console.log(THREEx);
 console.log(new Vector3());
-console.log(ArMarkerControls);

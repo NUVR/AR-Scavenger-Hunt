@@ -17,13 +17,25 @@ module.exports = {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
   },
+  node: {
+    fs: 'empty',
+  },
   module: {
-    noParse: /ar\.js/,
     rules: [
       {
+        enforce: 'pre',
         test: /\.js$/,
         exclude: /node_modules|lib/,
         use: ['eslint-loader'],
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules|lib/,
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-env'],
+          plugins: ['@babel/plugin-transform-strict-mode'],
+        },
       },
     ],
   },

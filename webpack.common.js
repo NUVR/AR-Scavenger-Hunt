@@ -10,7 +10,6 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin(),
-    new webpack.ProvidePlugin({ THREE: 'three' }),
     new webpack.HotModuleReplacementPlugin(),
   ],
   output: {

@@ -3,21 +3,19 @@ import { THREEx } from '../lib/ar';
 import {
   AmbientLight,
   BoxBufferGeometry,
-  ConeBufferGeometry,
   Group,
   Mesh,
-  MeshBasicMaterial,
+  MeshPhongMaterial,
   PerspectiveCamera,
   PointLight,
   Scene,
   TextureLoader,
   WebGLRenderer,
-  MeshPhongMaterial,
 } from 'three';
 
-const { ArToolkitSource, ArToolkitContext, ArMarkerControls } = THREEx;
+import './style.scss';
 
-const canvas = document.createElement('canvas');
+const { ArToolkitSource, ArToolkitContext, ArMarkerControls } = THREEx;
 
 const camera = new PerspectiveCamera(
   70,
@@ -28,7 +26,7 @@ const camera = new PerspectiveCamera(
 camera.position.z = 400;
 
 const scene = new Scene();
-const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
+const renderer = new WebGLRenderer({ antialias: true, alpha: true });
 
 const light = new AmbientLight({ color: 0x1f1f1f });
 const ptLight = new PointLight({ color: 0xffffff });
@@ -50,14 +48,14 @@ const markerRoot = new Group();
 scene.add(markerRoot);
 
 const texture = new TextureLoader().load('assets/crate.gif');
-const material = new MeshBasicMaterial({ map: texture });
+const material = new MeshPhongMaterial({ map: texture });
 const mesh = new Mesh(new BoxBufferGeometry(100, 100, 100), material);
 markerRoot.add(mesh);
 
 const markerControls = new ArMarkerControls(arToolkitContext, markerRoot, {
   type: 'pattern',
   patternUrl: 'assets/patt.hiro',
-  changeMatrixMode: 'cameraTransformMatrix',
+  changeMatrixMode: 'modelViewMatrix',
 });
 
 arToolkitSource.init(onResize);
@@ -65,6 +63,13 @@ arToolkitSource.init(onResize);
 arToolkitContext.init(() =>
   camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix())
 );
+
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+document.body.appendChild(renderer.domElement);
+
+render();
 
 window.addEventListener('resize', onResize);
 
@@ -75,13 +80,6 @@ function onResize() {
     arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);
   }
 }
-
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
-
-document.body.appendChild(canvas);
-
-render();
 
 function render() {
   requestAnimationFrame(render);

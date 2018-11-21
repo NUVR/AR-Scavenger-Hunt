@@ -2,17 +2,13 @@ import { THREEx } from '../lib/ar';
 
 import {
   AmbientLight,
-  BoxBufferGeometry,
+  AnimationMixer,
   Camera,
-  DoubleSide,
-  Mesh,
-  MeshPhongMaterial,
+  Clock,
+  LoopRepeat,
   PointLight,
   Scene,
-  TextureLoader,
   WebGLRenderer,
-  AnimationMixer,
-  LoopRepeat,
 } from 'three';
 
 import GLTFLoader from 'three-gltf-loader';
@@ -22,6 +18,7 @@ import './style.scss';
 const { ArToolkitSource, ArToolkitContext, ArMarkerControls } = THREEx;
 
 const renderer = new WebGLRenderer({ antialias: true, alpha: true });
+const clock = new Clock();
 
 const camera = new Camera();
 const scene = new Scene();
@@ -63,50 +60,21 @@ initModel();
 function initModel() {
   var loader = new GLTFLoader();
   loader.load('assets/Models/ugandan_knuckles/scene.gltf', function(gltf) {
-    var model = gltf.scene;
-    model.scale.set(0.005, 0.005, 0.005);
+    const model = gltf.scene;
+    model.scale.set(0.00125, 0.00125, 0.00125);
     // model.traverse( function ( o ) {
     //     if ( !o.isMesh ) return;
     //     o.material.emissive = o.material.color.clone().multiplyScalar( 0.3 );
     // } );
     mixer = new AnimationMixer(model);
-    var run = gltf.animations.find(function ( clip ) {
-      return clip.name === 'WalkCycle';
-    });
-    var action = mixer.clipAction(run);
+    const run = gltf.animations[0];
+    const action = mixer.clipAction(run);
     action.setLoop(LoopRepeat);
     action.play();
     scene.add(model);
     ready = true;
   });
 }
-
-// Instantiate a loader
-var loader = new GLTFLoader();
-
-// Load a glTF resource
-loader.load(
-  // resource URL
-  'assets/Models/ugandan_knuckles/scene.gltf',
-  // called when the resource is loaded
-  function(gltf) {
-    gltf.scene.position.set(-1, -0.5, -1);
-    gltf.scene.scale.set(0.0005, 0.0005, 0.0005);
-    scene.add(gltf.scene);
-    // let mixer = new AnimationMixer(gltf.scene);
-    // let action = mixer.clipAction(gltf.animations[0]);
-    // action.setLoop(LoopRepeat);
-    // action.play();
-  },
-  // called while loading is progressing
-  function(xhr) {
-    console.log((xhr.loaded / xhr.total * 100 ) + '% loaded');
-  },
-  // called when loading has errors
-  function(error) {
-    console.log('An error happened' + error);
-  }
-);
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -135,5 +103,9 @@ function render() {
   if (arToolkitSource.ready) {
     arToolkitContext.update(arToolkitSource.domElement);
     scene.visible = camera.visible;
+  }
+
+  if (ready) {
+    mixer.update(clock.getDelta());
   }
 }

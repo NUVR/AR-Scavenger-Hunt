@@ -34,12 +34,6 @@ let mixer, ready;
 scene.add(light);
 scene.add(ptLight);
 
-// const texture = new TextureLoader().load('assets/crate.gif');
-// const material = new MeshPhongMaterial({ map: texture, side: DoubleSide });
-// const mesh = new Mesh(new BoxBufferGeometry(1, 1, 1), material);
-// mesh.position.y = 0.5;
-// scene.add(mesh);
-
 const arToolkitContext = new ArToolkitContext({
   cameraParametersUrl: 'assets/camera_para.dat',
   detectionMode: 'mono',
@@ -62,10 +56,6 @@ function initModel() {
   loader.load('assets/Models/ugandan_knuckles/scene.gltf', function(gltf) {
     const model = gltf.scene;
     model.scale.set(0.00125, 0.00125, 0.00125);
-    // model.traverse( function ( o ) {
-    //     if ( !o.isMesh ) return;
-    //     o.material.emissive = o.material.color.clone().multiplyScalar( 0.3 );
-    // } );
     mixer = new AnimationMixer(model);
     const run = gltf.animations[0];
     const action = mixer.clipAction(run);

@@ -24,9 +24,9 @@ const scene = new Scene();
 scene.add(camera);
 scene.visible = false;
 
-const light = new AmbientLight({ color: 0x1f1f1f });
-const ptLight = new PointLight({ color: 0xffffff });
-ptLight.position.y = 200;
+const light = new AmbientLight(0x404040);
+const ptLight = new PointLight(0xffffff);
+ptLight.position.set(-1, 2, 2);
 
 scene.add(light);
 scene.add(ptLight);

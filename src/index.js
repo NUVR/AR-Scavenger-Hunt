@@ -125,22 +125,22 @@ function updatePosition() {
     zv -= 0.001;
   }
 
-  xv += Math.random() * (0.001 - -0.001) + -0.001;
-  zv += Math.random() * (0.001 - -0.001) + -0.001;
+  xv += Math.random() * 0.001 - 0.0005;
+  zv += Math.random() * 0.001 - 0.0005;
 
   // This is really sad but I don't remember how to do this with trig and this works:
-  let rotation = (Math.abs(xv) / Math.abs(zv)) * 1.57;
+  let rotation = (Math.abs(xv) / Math.abs(zv)) * (Math.PI / 2);
   if (xv > 0 && zv > 0) {
     // 0 to pi/2
   } else if (xv < 0 && zv > 0) {
     // pi/2 -> pi
-    rotation += 1.57;
+    rotation += Math.PI / 2;
   } else if (xv < 0 && zv < 0) {
-    // pi -> 3/4 pi
-    rotation += 3.14;
+    // pi -> 3/2 pi
+    rotation += Math.PI;
   } else {
-    // 3/4 pi to 2 pi
-    rotation += 4.71;
+    // 3/2 pi to 2 pi
+    rotation += Math.PI * 0.75;
   }
   model.rotation.y = rotation;
 

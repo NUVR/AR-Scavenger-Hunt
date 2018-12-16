@@ -22,6 +22,7 @@ const clock = new Clock();
 
 const camera = new Camera();
 const scene = new Scene();
+let model;
 scene.add(camera);
 scene.visible = false;
 

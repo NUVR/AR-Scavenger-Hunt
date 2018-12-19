@@ -53,14 +53,31 @@ initModel();
 
 function initModel() {
   var loader = new GLTFLoader();
-  loader.load('assets/Models/NortheasternMap2/BostonFromAltizure2-0Cut.gltf', function(gltf) {
-    model = gltf.scene;
-    model.position.y += 0.5
-    model.rotation.x -= Math.PI / 9; // 20 degree angle?
-    model.scale.set(0.75, 0.75, 0.75);
-    scene.add(model);
-    ready = true;
-  });
+  const progressMeter = document.querySelector('#progress');
+  progressMeter.classList.remove('hidden');
+  loader.load(
+    'assets/Models/NortheasternMap2/BostonFromAltizure2-0Cut.gltf',
+    function(gltf) {
+      setTimeout(() => (progressMeter.innerHTML = 'Done.'), 0);
+      model = gltf.scene;
+      model.position.y += 0.5;
+      model.rotation.x -= Math.PI / 9; // 20 degree angle?
+      model.scale.set(0.75, 2, 0.75);
+      scene.add(model);
+      ready = true;
+      setTimeout(() => progressMeter.classList.add('fadeout'), 5000);
+      setTimeout(() => progressMeter.classList.add('hidden'), 6000);
+    },
+    progressEvent => {
+      let progress = `${Math.floor(
+        (progressEvent.loaded / progressEvent.total) * 100
+      )}%`;
+      if (progressEvent.loaded >= progressEvent.total) {
+        progress = 'Finishing up...';
+      }
+      setTimeout(() => (progressMeter.innerHTML = progress), 0);
+    }
+  );
   // loader.load('assets/Models/ugandan_knuckles/scene.gltf', function(gltf) {
   //   model = gltf.scene;
   //   model.scale.set(0.00125, 0.00125, 0.00125);

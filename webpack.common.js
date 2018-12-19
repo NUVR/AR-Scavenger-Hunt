@@ -18,7 +18,7 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new CleanWebpackPlugin(['dist']),
     new CopyWebpackPlugin([{ from: './src/assets', to: 'assets' }]),
-    new HtmlWebpackPlugin(),
+    new HtmlWebpackPlugin({ template: './src/index.html' }),
     new StyleLintPlugin(),
     new MiniCssExtractPlugin({
       filename: dev ? '[name].css' : '[name].[hash].css',

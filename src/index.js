@@ -29,7 +29,7 @@ const light = new AmbientLight(0x404040);
 const ptLight = new PointLight(0xffffff);
 ptLight.position.set(-1, 2, 2);
 
-let mixer, ready;
+let mixer, ready, model;
 
 scene.add(light);
 scene.add(ptLight);

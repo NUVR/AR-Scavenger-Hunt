@@ -71,12 +71,13 @@ function initModel() {
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-document.body.appendChild(renderer.domElement);
+const container = document.querySelector('#rendererContainer');
+container.appendChild(renderer.domElement);
 
 arToolkitContext.init(() =>
   camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix())
 );
-arToolkitSource.init(onResize);
+arToolkitSource.init(container, onResize);
 window.addEventListener('resize', onResize);
 
 function onResize() {

@@ -27,7 +27,7 @@ scene.visible = false;
 
 const light = new AmbientLight(0x404040);
 const ptLight = new PointLight(0xffffff);
-ptLight.position.set(-1, 4, 4);
+ptLight.position.set(3, 4, 4);
 
 let mixer, ready, model;
 
@@ -60,7 +60,6 @@ function initModel() {
     function(gltf) {
       setTimeout(() => (progressMeter.innerHTML = 'Done.'), 0);
       model = gltf.scene;
-      model.position.y += 0.5;
       model.rotation.x -= Math.PI / 9; // 20 degree angle?
       model.scale.set(0.75, 2, 0.75);
       scene.add(model);

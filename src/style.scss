@@ -1,4 +1,28 @@
 html,
 body {
+  overflow: hidden;
   margin: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+#progress {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  padding: 15px 30px;
+  border-radius: 100px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+  font-size: 2rem;
+  font-weight: bold;
+  transform: translate(-50%, -50%);
+
+  &.fadeout {
+    opacity: 0;
+    transition: 1s;
+  }
 }

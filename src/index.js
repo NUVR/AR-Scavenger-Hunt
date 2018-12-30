@@ -38,14 +38,15 @@ const ptLight = new PointLight(0xffffff);
 ptLight.position.set(3, 4, 7);
 
 // 3d models or meshes
-let bostonMap, knuckles, aoun, script;
+let bostonMap, knuckles, aoun, script, blind;
 // gltf animation mixers
 let knucklesMixer, aounMixer;
 // is the 3d model loaded and ready to be rendered?
 let knucklesReady,
   aounReady,
   bostonReady,
-  scriptReady = false;
+  scriptReady,
+  blindReady = false;
 
 scene.add(light);
 scene.add(ptLight);
@@ -66,7 +67,7 @@ function initModels() {
   const progressMeter = document.querySelector('#progress');
   progressMeter.classList.remove('hidden');
 
-  let patternArray = ['kanji', 'hiro', 'NUvr', 'One', 'Two'];
+  let patternArray = ['kanji', 'hiro', 'NUvr', 'One', 'Two', 'Three'];
   for (let i = 0; i < patternArray.length; i++) {
     let markerRoot = new Group();
     scene.add(markerRoot);
@@ -134,6 +135,16 @@ function initModels() {
       case 'Two':
         movieScript(markerRoot);
         break;
+      case 'Three':
+      loader.load('assets/Models/Blind/ForTheBlind.gltf', function(gltf) {
+        blind = gltf.scene;
+        blind.rotation.x -= Math.PI / 2;
+        blind.scale.set(0.25, 0.25, 0.25);
+        blind.position.x += 0.5;
+        markerRoot.add(blind);
+        blindReady = true;
+      });
+      break;
     }
   }
 }

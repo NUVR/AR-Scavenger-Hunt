@@ -33,13 +33,21 @@ const scene = new Scene();
 scene.add(camera);
 scene.visible = true;
 
-// const light = new AmbientLight(0x404040);
+const light = new AmbientLight(0x404040);
 const ptLight = new PointLight(0xffffff);
 ptLight.position.set(3, 4, 7);
 
-let knucklesMixer, aounMixer, kReady, aReady, bReady, bostonMap, knuckles, aoun;
+// 3d models or meshes
+let bostonMap, knuckles, aoun, script;
+// gltf animation mixers
+let knucklesMixer, aounMixer;
+// is the 3d model loaded and ready to be rendered?
+let knucklesReady,
+  aounReady,
+  bostonReady,
+  scriptReady = false;
 
-// scene.add(light);
+scene.add(light);
 scene.add(ptLight);
 
 const arToolkitContext = new ArToolkitContext({
@@ -51,12 +59,6 @@ const arToolkitSource = new ArToolkitSource({
   sourceType: 'webcam',
 });
 
-// const markerControls = new ArMarkerControls(arToolkitContext, camera, {
-//   type: 'pattern',
-//   patternUrl: 'assets/patt.kanji',
-//   changeMatrixMode: 'cameraTransformMatrix',
-// });
-
 initModels();
 
 function initModels() {
@@ -64,7 +66,7 @@ function initModels() {
   const progressMeter = document.querySelector('#progress');
   progressMeter.classList.remove('hidden');
 
-  let patternArray = ['kanji', 'hiro', 'NUvr', 'One'];
+  let patternArray = ['kanji', 'hiro', 'NUvr', 'One', 'Two'];
   for (let i = 0; i < patternArray.length; i++) {
     let markerRoot = new Group();
     scene.add(markerRoot);
@@ -82,7 +84,7 @@ function initModels() {
             bostonMap.rotation.x -= Math.PI / 9; // 20 degree angle?
             bostonMap.scale.set(0.75, 2, 0.75);
             // scene.add(bostonMap);
-            bReady = true;
+            bostonReady = true;
             setTimeout(() => progressMeter.classList.add('fadeout'), 5000);
             setTimeout(() => progressMeter.classList.add('hidden'), 6000);
             markerRoot.add(bostonMap);
@@ -110,7 +112,7 @@ function initModels() {
           knuckles.position.z -= 0.6;
           knuckles.position.x -= 0.45;
           markerRoot.add(knuckles);
-          kReady = true;
+          knucklesReady = true;
         });
         break;
       case 'NUvr':
@@ -123,11 +125,14 @@ function initModels() {
           action.play();
           aoun.rotation.x += Math.PI;
           markerRoot.add(aoun);
-          aReady = true;
+          aounReady = true;
         });
         break;
       case 'One':
         addMeshesToHole(markerRoot);
+        break;
+      case 'Two':
+        movieScript(markerRoot);
         break;
     }
   }
@@ -163,13 +168,71 @@ function render() {
     // scene.visible = camera.visible;
   }
 
-  if (kReady && aReady) {
+  if (knucklesReady) {
     // updatePosition();
     knucklesMixer.update(clock.getDelta());
+  }
+  if (aounReady) {
     aounMixer.update(clock.getDelta());
+  }
+  if (scriptReady) {
+    animateScript();
   }
 }
 
+// INITIALIZATION OF MESHES
+////////////////////////////////////////////////////////
+function addMeshesToHole(aMarkerRoot) {
+  let geometry1 = new CubeGeometry(1, 15, 1);
+  let loader = new TextureLoader();
+  let texture = loader.load('assets/Textures/tile4b.gif', render);
+  texture.wrapS = RepeatWrapping;
+  texture.wrapT = RepeatWrapping;
+  texture.repeat.set(1.25, 1.25);
+  let material1 = new MeshBasicMaterial({
+    transparent: true,
+    map: texture,
+    side: BackSide,
+  });
+  let mesh1 = new Mesh(geometry1, material1);
+  mesh1.position.y = -7.5;
+  aMarkerRoot.add(mesh1);
+
+  // the invisibility cloak (ring; has square hole)
+  let geometry0 = new BoxGeometry(1, 15, 1);
+  geometry0.faces.splice(4, 2); // make hole by removing top two triangles
+  let material0 = new MeshBasicMaterial({
+    colorWrite: false,
+  });
+  let mesh0 = new Mesh(geometry0, material0);
+  mesh0.scale.set(1, 1, 1).multiplyScalar(1.01);
+  mesh0.position.y = -7.5;
+  aMarkerRoot.add(mesh0);
+}
+
+function movieScript(aMarkerRoot) {
+  let geometry1 = new CubeGeometry(2, 0.25, 8);
+  let loader = new TextureLoader();
+  let texture = loader.load('assets/Textures/BeeMovieScript.png', render);
+  // texture.wrapS = RepeatWrapping;
+  // texture.wrapT = RepeatWrapping;
+  let material1 = new MeshBasicMaterial({
+    transparent: true,
+    map: texture,
+    side: BackSide,
+  });
+  script = new Mesh(geometry1, material1);
+  script.position.z = 4;
+  script.rotation.y += Math.PI;
+  script.scale.x = -1;
+  aMarkerRoot.add(script);
+  scriptReady = true;
+}
+
+// ANIMATION OF MESHES!
+//////////////////////////////////////////////////////////////////
+
+// knuckles update not set up for a particular letter yet.
 // let xv = 0.02;
 // let zv = 0.01;
 
@@ -213,30 +276,10 @@ function render() {
 //   model.position.z += zv;
 // }
 
-function addMeshesToHole(aMarkerRoot) {
-  let geometry1	= new CubeGeometry(1, 15, 1);
-  let loader = new TextureLoader();
-  let texture = loader.load('assets/Textures/tile4b.gif', render);
-  texture.wrapS = RepeatWrapping;
-  texture.wrapT = RepeatWrapping;
-  texture.repeat.set(1.25, 1.25);
-  let material1	= new MeshBasicMaterial({
-    transparent: true,
-    map: texture,
-    side: BackSide,
-  });
-  let mesh1 = new Mesh(geometry1, material1);
-  mesh1.position.y = -7.5;
-  aMarkerRoot.add(mesh1);
-
-  // the invisibility cloak (ring; has square hole)
-  let geometry0 = new BoxGeometry(1, 15, 1);
-  geometry0.faces.splice(4, 2); // make hole by removing top two triangles
-  let material0 = new MeshBasicMaterial({
-    colorWrite: false,
-  });
-  let mesh0 = new Mesh(geometry0, material0);
-  mesh0.scale.set(1, 1, 1).multiplyScalar(1.01);
-  mesh0.position.y = -7.5;
-  aMarkerRoot.add(mesh0);
+function animateScript() {
+  if (script.position.z < -4) {
+    script.position.z = 4;
+  } else {
+    script.position.z -= 0.0025;
+  }
 }

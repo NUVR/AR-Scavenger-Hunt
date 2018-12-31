@@ -48,6 +48,8 @@ let knucklesReady,
   scriptReady,
   blindReady = false;
 
+let bostonLoadRequested = false;
+
 let markerArray;
 
 scene.add(light);
@@ -63,11 +65,9 @@ const arToolkitSource = new ArToolkitSource({
 });
 
 initModels();
-
+const progressMeter = document.querySelector('#progress');
 function initModels() {
   var loader = new GLTFLoader();
-  const progressMeter = document.querySelector('#progress');
-  progressMeter.classList.remove('hidden');
 
   markerArray = [];
   let patternArray = ['kanji', 'hiro', 'NUvr', 'One', 'Two', 'Three'];
@@ -81,30 +81,7 @@ function initModels() {
   
     switch(patternArray[i]) {
       case 'hiro':
-        progressMeter.classList.remove('hidden');
-        loader.load(
-          'assets/Models/NortheasternMap2/BostonFromAltizure2-0Cut.gltf',
-          function(gltf) {
-            setTimeout(() => (progressMeter.innerHTML = 'Done.'), 0);
-            bostonMap = gltf.scene;
-            bostonMap.rotation.x -= Math.PI / 9; // 20 degree angle?
-            bostonMap.scale.set(0.75, 2, 0.75);
-            // scene.add(bostonMap);
-            bostonReady = true;
-            setTimeout(() => progressMeter.classList.add('fadeout'), 5000);
-            setTimeout(() => progressMeter.classList.add('hidden'), 6000);
-            markerArray[i].marker.add(bostonMap);
-          },
-          progressEvent => {
-            let progress = `${Math.floor(
-              (progressEvent.loaded / progressEvent.total) * 100
-            )}%`;
-            if (progressEvent.loaded >= progressEvent.total) {
-              progress = 'Finishing up...';
-            }
-            setTimeout(() => (progressMeter.innerHTML = progress), 0);
-          }
-        );
+        // will eventually load a temp model here that is used as a loading animation.
         break;
       case 'kanji':
         loader.load('assets/Models/ugandan_knuckles/scene.gltf', function(gltf) {
@@ -197,6 +174,38 @@ function render() {
 
 // INITIALIZATION OF MESHES
 ////////////////////////////////////////////////////////
+function loadBoston(aMarkerRoot) {
+  if (!bostonLoadRequested) {
+    bostonLoadRequested = true;
+    progressMeter.classList.remove('hidden');
+    var loader = new GLTFLoader();
+    loader.load(
+      'assets/Models/NortheasternMap2/BostonFromAltizure2-0Cut.gltf',
+      function(gltf) {
+        setTimeout(() => (progressMeter.innerHTML = 'Done.'), 0);
+        bostonMap = gltf.scene;
+        bostonMap.rotation.x -= Math.PI / 9; // 20 degree angle?
+        bostonMap.scale.set(0.75, 2, 0.75);
+        // scene.add(bostonMap);
+        bostonReady = true;
+        setTimeout(() => progressMeter.classList.add('fadeout'), 5000);
+        setTimeout(() => progressMeter.classList.add('hidden'), 6000);
+        let index = markerArray.findIndex(x => x.name === 'hiro'); // TODO MUST CHANGE THIS IF THE BOSTON MAP IS MOVED OFF OF HIRO
+        markerArray[index].marker.add(bostonMap);
+      },
+      progressEvent => {
+        let progress = `${Math.floor(
+          (progressEvent.loaded / progressEvent.total) * 100
+        )}%`;
+        if (progressEvent.loaded >= progressEvent.total) {
+          progress = 'Finishing up...';
+        }
+        setTimeout(() => (progressMeter.innerHTML = progress), 0);
+      }
+    );
+  }
+}
+
 function addMeshesToHole(aMarkerRoot) {
   let geometry1 = new CubeGeometry(1, 15, 1);
   let loader = new TextureLoader();
@@ -299,14 +308,13 @@ function animateScript() {
     script.position.z -= 0.0025;
   }
 }
-const progressMeter = document.querySelector('#progress');
 
 function detectVisibleMarkers() {
   for (let i = 0; i < markerArray.length; i++) {
     if (markerArray[i].marker.visible) {
       switch (markerArray[i].name) {
         case 'hiro':
-          console.log('hiro marker detected');
+          loadBoston();
           break;
         case 'kanji':
           console.log('kanji marker detected');

@@ -48,6 +48,8 @@ let knucklesReady,
   scriptReady,
   blindReady = false;
 
+let markerArray;
+
 scene.add(light);
 scene.add(ptLight);
 
@@ -67,16 +69,19 @@ function initModels() {
   const progressMeter = document.querySelector('#progress');
   progressMeter.classList.remove('hidden');
 
+  markerArray = [];
   let patternArray = ['kanji', 'hiro', 'NUvr', 'One', 'Two', 'Three'];
   for (let i = 0; i < patternArray.length; i++) {
     let markerRoot = new Group();
     scene.add(markerRoot);
+    markerArray.push({ name: patternArray[i], marker: markerRoot });
     let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
       type : 'pattern', patternUrl : "assets/Patts/" + patternArray[i] + '.patt',
     });
   
     switch(patternArray[i]) {
       case 'hiro':
+        progressMeter.classList.remove('hidden');
         loader.load(
           'assets/Models/NortheasternMap2/BostonFromAltizure2-0Cut.gltf',
           function(gltf) {
@@ -88,7 +93,7 @@ function initModels() {
             bostonReady = true;
             setTimeout(() => progressMeter.classList.add('fadeout'), 5000);
             setTimeout(() => progressMeter.classList.add('hidden'), 6000);
-            markerRoot.add(bostonMap);
+            markerArray[i].marker.add(bostonMap);
           },
           progressEvent => {
             let progress = `${Math.floor(
@@ -176,7 +181,6 @@ function render() {
 
   if (arToolkitSource.ready) {
     arToolkitContext.update(arToolkitSource.domElement);
-    // scene.visible = camera.visible;
   }
 
   if (knucklesReady) {
@@ -288,9 +292,38 @@ function movieScript(aMarkerRoot) {
 // }
 
 function animateScript() {
+  detectVisibleMarkers();
   if (script.position.z < -4) {
     script.position.z = 4;
   } else {
     script.position.z -= 0.0025;
+  }
+}
+const progressMeter = document.querySelector('#progress');
+
+function detectVisibleMarkers() {
+  for (let i = 0; i < markerArray.length; i++) {
+    if (markerArray[i].marker.visible) {
+      switch (markerArray[i].name) {
+        case 'hiro':
+          console.log('hiro marker detected');
+          break;
+        case 'kanji':
+          console.log('kanji marker detected');
+          break;
+        case 'NUvr':
+          console.log('NUvr marker detected');
+          break;
+        case 'One':
+          console.log('One detected');
+          break;
+        case 'Two':
+          console.log('Two detected');
+          break;
+        case 'Three':
+          console.log('Three detected');
+          break;
+      }
+    }
   }
 }

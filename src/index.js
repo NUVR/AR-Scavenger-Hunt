@@ -17,6 +17,10 @@ import {
   Mesh,
   BackSide,
   BoxGeometry,
+  VideoTexture,
+  PlaneBufferGeometry,
+  LinearFilter,
+  RGBFormat,
 } from 'three';
 
 import GLTFLoader from 'three-gltf-loader';
@@ -70,7 +74,7 @@ function initModels() {
   var loader = new GLTFLoader();
 
   markerArray = [];
-  let patternArray = ['kanji', 'hiro', 'NUvr', 'One', 'Two', 'Three'];
+  let patternArray = ['kanji', 'hiro', 'NUvr', 'One', 'Two', 'Three', 'Four'];
   for (let i = 0; i < patternArray.length; i++) {
     let markerRoot = new Group();
     scene.add(markerRoot);
@@ -118,15 +122,17 @@ function initModels() {
         movieScript(markerRoot);
         break;
       case 'Three':
-      loader.load('assets/Models/Blind/ForTheBlind.gltf', function(gltf) {
-        blind = gltf.scene;
-        blind.rotation.x -= Math.PI / 2;
-        blind.scale.set(0.25, 0.25, 0.25);
-        blind.position.x += 0.5;
-        markerRoot.add(blind);
-        blindReady = true;
-      });
-      break;
+        loader.load('assets/Models/Blind/ForTheBlind.gltf', function(gltf) {
+          blind = gltf.scene;
+          blind.rotation.x -= Math.PI / 2;
+          blind.scale.set(0.25, 0.25, 0.25);
+          blind.position.x += 0.5;
+          markerRoot.add(blind);
+          blindReady = true;
+        });
+        break;
+      case 'Four':
+        addWhahVideo(markerRoot);
     }
   }
 }
@@ -309,7 +315,22 @@ function animateScript() {
   }
 }
 
+function addWhahVideo(aMarkerRoot) {
+  let geometry = new PlaneBufferGeometry(2, 2, 4, 4);
+  let video = document.getElementById('video');
+  let texture = new VideoTexture(video);
+  texture.minFilter = LinearFilter;
+  texture.magFilter = LinearFilter;
+  texture.format = RGBFormat;
+  let material = new MeshBasicMaterial({ map: texture });
+
+  let mesh = new Mesh(geometry, material);
+  mesh.rotation.x = -Math.PI / 2;
+  aMarkerRoot.add(mesh);
+}
+
 function detectVisibleMarkers() {
+  let shouldWhahPlay = false;
   for (let i = 0; i < markerArray.length; i++) {
     if (markerArray[i].marker.visible) {
       switch (markerArray[i].name) {
@@ -331,7 +352,16 @@ function detectVisibleMarkers() {
         case 'Three':
           console.log('Three detected');
           break;
+        case 'Four':
+          // set the video's play state
+          shouldWhahPlay = true;
       }
     }
+  }
+  let video = document.getElementById('video');
+  if (shouldWhahPlay) {
+    video.play();
+  } else {
+    video.pause();
   }
 }

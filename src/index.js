@@ -74,7 +74,7 @@ function initModels() {
   var loader = new GLTFLoader();
 
   markerArray = [];
-  let patternArray = ['kanji', 'hiro', 'NUvr', 'One', 'Two', 'Three', 'Four'];
+  let patternArray = ['kanji', 'hiro', 'NUvr', 'One', 'Two', 'Three', 'Four', 'A', 'B', 'Train'];
   for (let i = 0; i < patternArray.length; i++) {
     let markerRoot = new Group();
     scene.add(markerRoot);
@@ -86,6 +86,7 @@ function initModels() {
     switch(patternArray[i]) {
       case 'hiro':
         // will eventually load a temp model here that is used as a loading animation.
+        // maybe flossing aoun?
         break;
       case 'kanji':
         loader.load('assets/Models/ugandan_knuckles/scene.gltf', function(gltf) {
@@ -133,6 +134,16 @@ function initModels() {
         break;
       case 'Four':
         addWhahVideo(markerRoot);
+        break;
+      case 'Train':
+        loadTrain();
+        break;
+      case 'A':
+        loadOldMen();
+        break;
+      case 'B':
+        loadPhilanthropist();
+        break;
     }
   }
 }
@@ -259,8 +270,73 @@ function movieScript(aMarkerRoot) {
   scriptReady = true;
 }
 
+function loadTrain() {
+  console.log('loading train.');
+}
+
+function loadOldMen() {
+  console.log('loading old men');
+}
+
+function loadPhilanthropist() {
+  console.log('loading philanthropist');
+}
+
 // ANIMATION OF MESHES!
 //////////////////////////////////////////////////////////////////
+
+
+function detectVisibleMarkers() {
+  let shouldWhahPlay = false;
+  let shouldScriptReset = true;
+  let trolley, a, b = false;
+  for (let i = 0; i < markerArray.length; i++) {
+    if (markerArray[i].marker.visible) {
+      switch (markerArray[i].name) {
+        case 'hiro':
+          loadBoston();
+          break;
+        case 'kanji':
+          console.log('kanji marker detected');
+          break;
+        case 'NUvr':
+          console.log('NUvr marker detected');
+          break;
+        case 'One':
+          console.log('One detected');
+          break;
+        case 'Two':
+          shouldScriptReset = false;
+          break;
+        case 'Three':
+          console.log('Three detected');
+          break;
+        case 'Four':
+          // set the video's play state
+          shouldWhahPlay = true;
+          break;
+        case 'Train':
+          trolley = true;
+          break;
+        case 'A':
+          a = true;
+          break;
+        case 'B':
+          b = true;
+      }
+    }
+  }
+  let video = document.getElementById('video');
+  if (shouldWhahPlay) {
+    video.play();
+  } else {
+    video.pause();
+  }
+  if (shouldScriptReset) {
+    script.position.z = 4;
+  }
+  updateTrolleyGame(trolley, a, b);
+}
 
 // knuckles update not set up for a particular letter yet.
 // let xv = 0.02;
@@ -329,39 +405,11 @@ function addWhahVideo(aMarkerRoot) {
   aMarkerRoot.add(mesh);
 }
 
-function detectVisibleMarkers() {
-  let shouldWhahPlay = false;
-  for (let i = 0; i < markerArray.length; i++) {
-    if (markerArray[i].marker.visible) {
-      switch (markerArray[i].name) {
-        case 'hiro':
-          loadBoston();
-          break;
-        case 'kanji':
-          console.log('kanji marker detected');
-          break;
-        case 'NUvr':
-          console.log('NUvr marker detected');
-          break;
-        case 'One':
-          console.log('One detected');
-          break;
-        case 'Two':
-          console.log('Two detected');
-          break;
-        case 'Three':
-          console.log('Three detected');
-          break;
-        case 'Four':
-          // set the video's play state
-          shouldWhahPlay = true;
-      }
-    }
-  }
-  let video = document.getElementById('video');
-  if (shouldWhahPlay) {
-    video.play();
-  } else {
-    video.pause();
-  }
+
+function updateTrolleyGame(trolley, a, b) {
+  // if trolley is false then set a and b to invisible and make sure to reset the game
+  // else see if the game is started
+  // if it isnt then play the intro audio clip explaining the game
+  // setTimeout for 10000 ms on that event check if a and b are still covered
+  // play corresponding animation and audio clip based on choice
 }

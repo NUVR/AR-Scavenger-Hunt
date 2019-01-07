@@ -5,8 +5,10 @@ import {
   AnimationMixer,
   Camera,
   Clock,
+  DoubleSide,
   LoopRepeat,
   PointLight,
+  PlaneGeometry,
   Scene,
   WebGLRenderer,
   Group,
@@ -42,7 +44,7 @@ const ptLight = new PointLight(0xffffff);
 ptLight.position.set(3, 4, 7);
 
 // 3d models or meshes
-let bostonMap, knuckles, aoun, script, blind;
+let bostonMap, knuckles, aoun, script, blind, portal;
 // gltf animation mixers
 let knucklesMixer, aounMixer;
 // is the 3d model loaded and ready to be rendered?
@@ -74,22 +76,42 @@ function initModels() {
   var loader = new GLTFLoader();
 
   markerArray = [];
-  let patternArray = ['kanji', 'hiro', 'NUvr', 'One', 'Two', 'Three', 'Four', 'A', 'B', 'Train'];
+  let patternArray = [
+    'kanji',
+    'hiro',
+    'NUvr',
+    'One',
+    'Two',
+    'Three',
+    'Four',
+    'Five',
+    'Six',
+    'A',
+    'B',
+    'Train',
+  ];
   for (let i = 0; i < patternArray.length; i++) {
     let markerRoot = new Group();
     scene.add(markerRoot);
     markerArray.push({ name: patternArray[i], marker: markerRoot });
-    let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
-      type : 'pattern', patternUrl : "assets/Patts/" + patternArray[i] + '.patt',
-    });
-  
-    switch(patternArray[i]) {
+    let markerControls = new THREEx.ArMarkerControls(
+      arToolkitContext,
+      markerRoot,
+      {
+        type: 'pattern',
+        patternUrl: 'assets/Patts/' + patternArray[i] + '.patt',
+      }
+    );
+
+    switch (patternArray[i]) {
       case 'hiro':
         // will eventually load a temp model here that is used as a loading animation.
         // maybe flossing aoun?
         break;
       case 'kanji':
-        loader.load('assets/Models/ugandan_knuckles/scene.gltf', function(gltf) {
+        loader.load('assets/Models/ugandan_knuckles/scene.gltf', function(
+          gltf
+        ) {
           knuckles = gltf.scene;
           knuckles.scale.set(0.00125, 0.00125, 0.00125);
           knucklesMixer = new AnimationMixer(knuckles);
@@ -104,7 +126,9 @@ function initModels() {
         });
         break;
       case 'NUvr':
-        loader.load('assets/Models/Aoun/AounAnimatedNoTexture.gltf', function(gltf) {
+        loader.load('assets/Models/Aoun/AounAnimatedNoTexture.gltf', function(
+          gltf
+        ) {
           aoun = gltf.scene;
           aounMixer = new AnimationMixer(aoun);
           const floss = gltf.animations[0];
@@ -144,6 +168,11 @@ function initModels() {
       case 'B':
         loadPhilanthropist();
         break;
+      case 'Five':
+        loadPortal(markerRoot, true);
+        break;
+      case 'Six':
+        loadPortal(markerRoot, false);
     }
   }
 }
@@ -270,6 +299,90 @@ function movieScript(aMarkerRoot) {
   scriptReady = true;
 }
 
+function loadPortal(aMarkerRoot, isFirstPortal) {
+  // is firstPortal will determine which textures are loaded onto the cube later
+
+  let loader = new TextureLoader();
+
+  // material for portal (for debugging)
+
+  let defaultMaterial = new MeshBasicMaterial({
+    map: loader.load('images/sphere-colored.png'),
+    color: 0x444444,
+    side: DoubleSide,
+    transparent: true,
+    opacity: 0.6,
+  });
+
+  let portalWidth = 2;
+  let portalHeight = 2;
+  let portalBorder = 0.1;
+
+  portal = new Mesh(
+    new PlaneGeometry(portalWidth, portalHeight),
+    defaultMaterial
+  );
+  portal.rotation.x += Math.PI / 2;
+  portal.position.y = portalHeight / 2 + portalBorder;
+  portal.layers.set(1);
+  aMarkerRoot.add(portal);
+
+  camera.layers.enable(1);
+
+  let portalMaterial = new MeshBasicMaterial({
+    color: 0xffff00,
+    side: DoubleSide,
+    transparent: true,
+    opacity: 0.75,
+  });
+
+  let portalBorderMesh = new Mesh(
+    new PlaneGeometry(
+      portalWidth + 2 * portalBorder,
+      portalHeight + 2 * portalBorder
+    ),
+    portalMaterial
+  );
+  portalBorderMesh.rotation.x += Math.PI / 2;
+  portalBorderMesh.position.y = portal.position.y;
+  portalBorderMesh.layers.set(0);
+  aMarkerRoot.add(portalBorderMesh);
+
+  // the world beyond the portal
+
+  // textures from http://www.humus.name/
+  let skyMaterialArray = [
+    new MeshBasicMaterial({
+      map: loader.load('assets/Textures/mountain/posx.jpg'),
+      side: BackSide,
+    }),
+    new MeshBasicMaterial({
+      map: loader.load('assets/Textures/mountain/negx.jpg'),
+      side: BackSide,
+    }),
+    new MeshBasicMaterial({
+      map: loader.load('assets/Textures/mountain/posy.jpg'),
+      side: BackSide,
+    }),
+    new MeshBasicMaterial({
+      map: loader.load('assets/Textures/mountain/negy.jpg'),
+      side: BackSide,
+    }),
+    new MeshBasicMaterial({
+      map: loader.load('assets/Textures/mountain/posz.jpg'),
+      side: BackSide,
+    }),
+    new MeshBasicMaterial({
+      map: loader.load('assets/Textures/mountain/negz.jpg'),
+      side: BackSide,
+    }),
+  ];
+  let skyMesh = new Mesh(new CubeGeometry(30, 30, 30), skyMaterialArray);
+  skyMesh.rotation.x -= Math.PI / 2;
+  skyMesh.layers.set(2);
+  aMarkerRoot.add(skyMesh);
+}
+
 function loadTrain() {
   console.log('loading train.');
 }
@@ -285,11 +398,12 @@ function loadPhilanthropist() {
 // ANIMATION OF MESHES!
 //////////////////////////////////////////////////////////////////
 
-
 function detectVisibleMarkers() {
   let shouldWhahPlay = false;
   let shouldScriptReset = true;
-  let trolley, a, b = false;
+  let trolley,
+    a,
+    b = false;
   for (let i = 0; i < markerArray.length; i++) {
     if (markerArray[i].marker.visible) {
       switch (markerArray[i].name) {
@@ -314,6 +428,13 @@ function detectVisibleMarkers() {
         case 'Four':
           // set the video's play state
           shouldWhahPlay = true;
+          break;
+        case 'Five':
+          animatePortal();
+          break;
+        case 'Six':
+          // portal 2
+          animatePortal();
           break;
         case 'Train':
           trolley = true;
@@ -405,11 +526,64 @@ function addWhahVideo(aMarkerRoot) {
   aMarkerRoot.add(mesh);
 }
 
-
+let prevTrolley = false;
 function updateTrolleyGame(trolley, a, b) {
   // if trolley is false then set a and b to invisible and make sure to reset the game
   // else see if the game is started
   // if it isnt then play the intro audio clip explaining the game
   // setTimeout for 10000 ms on that event check if a and b are still covered
   // play corresponding animation and audio clip based on choice
+  if (trolley && !prevTrolley) {
+    console.log('Trolley is: ' + trolley + ' a: ' + a + ' b: ' + b);
+  }
+}
+
+function animatePortal() {
+  let gl = renderer.context;
+
+  // clear buffers now: color, depth, stencil
+  renderer.clear(true, true, true);
+  // do not clear buffers before each render pass
+  renderer.autoClear = false;
+
+  // FIRST PASS
+  // goal: using the stencil buffer, place 1's in position of first portal (layer 1)
+  // enable the stencil buffer
+  gl.enable(gl.STENCIL_TEST);
+
+  // layer 1 contains only the first portal
+  camera.layers.set(1);
+  gl.stencilFunc(gl.ALWAYS, 1, 0xff);
+  gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
+  gl.stencilMask(0xff);
+  // only write to stencil buffer (not color or depth)
+  gl.colorMask(false, false, false, false);
+  gl.depthMask(false);
+
+  renderer.render(scene, camera);
+  // SECOND PASS
+  // goal: render skybox (layer 2) but only through portal
+
+  gl.colorMask(true, true, true, true);
+  gl.depthMask(true);
+
+  gl.stencilFunc(gl.EQUAL, 1, 0xff);
+  gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+
+  camera.layers.set(2);
+  renderer.render(scene, camera);
+
+  // FINAL PASS
+  // goal: render the rest of the scene (layer 0)
+
+  // using stencil buffer simplifies drawing border around portal
+  gl.stencilFunc(gl.NOTEQUAL, 1, 0xff);
+  gl.colorMask(true, true, true, true);
+  gl.depthMask(true);
+
+  camera.layers.set(0); // layer 0 contains portal border mesh
+  renderer.render(scene, camera);
+
+  // set things back to normal
+  renderer.autoClear = true;
 }

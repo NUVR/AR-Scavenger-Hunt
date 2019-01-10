@@ -120,7 +120,8 @@ function initModels() {
           action.setLoop(LoopRepeat);
           action.play();
           knuckles.position.z -= 0.6;
-          knuckles.position.x -= 0.45;
+          knuckles.position.x = 0.45;
+          knuckles.rotation.y -= Math.PI / 2;
           markerRoot.add(knuckles);
           knucklesReady = true;
         });
@@ -411,7 +412,7 @@ function detectVisibleMarkers() {
           loadBoston();
           break;
         case 'kanji':
-          console.log('kanji marker detected');
+          updateKnuckles();
           break;
         case 'NUvr':
           console.log('NUvr marker detected');
@@ -458,50 +459,51 @@ function detectVisibleMarkers() {
   }
   updateTrolleyGame(trolley, a, b);
 }
+let reversed = false;
+function updateKnuckles() {
+  // starting position
+  let xv = 0;
+  let zv = 0;
+  /*
+      If we are within .1 of -.5 for any then start adding
+     */
+  if (knuckles.position.x > 0 && knuckles.position.z < -0.55) {
+    // straight part of s on top
+    if (reversed && knuckles.position.x > 0.4) {
+      reversed = false;
+      knuckles.rotation.y -= Math.PI;
+    }
+  } else if (knuckles.position.x < 0 && knuckles.position.z < 0) {
+    // first curve
+    if (!reversed) {
+      knuckles.rotation.y += Math.PI / 90;
+    } else {
+      knuckles.rotation.y -= Math.PI / 90;
+    }
+  } else if (knuckles.position.x > 0 && knuckles.position.z < 0.55) {
+    if (!reversed) {
+      knuckles.rotation.y -= Math.PI / 90;
+    } else {
+      knuckles.rotation.y += Math.PI / 90;
+    }
+    // second curve
+  } else if (knuckles.position.x < 0 && knuckles.position.z > 0.5) {
+    // straight part of end of s
+    if (!reversed && knuckles.position.x < -0.5) {
+      reversed = true;
+      console.log('reversed flipped!');
+      knuckles.rotation.y += Math.PI;
+    }
+  }
 
-// knuckles update not set up for a particular letter yet.
-// let xv = 0.02;
-// let zv = 0.01;
+  xv = Math.sin(knuckles.rotation.y) / 100;
+  zv = Math.cos(knuckles.rotation.y) / 100;
+  console.log('rotation: ' + knuckles.rotation.y + ' xv: ' + xv);
+  console.log('rotation: ' + knuckles.rotation.y + ' zv: ' + zv);
 
-// function updatePosition() {
-//   /*
-//       If we are within .1 of -.5 for any then start adding
-//      */
-//   if (model.position.x < -0.4) {
-//     xv += 0.001;
-//   }
-//   if (model.position.z < -0.4) {
-//     zv += 0.001;
-//   }
-//   if (model.position.x > 0.4) {
-//     xv -= 0.001;
-//   }
-//   if (model.position.z > 0.4) {
-//     zv -= 0.001;
-//   }
-
-//   xv += Math.random() * 0.001 - 0.0005;
-//   zv += Math.random() * 0.001 - 0.0005;
-
-//   // This is really sad but I don't remember how to do this with trig and this works:
-//   let rotation = (Math.abs(xv) / Math.abs(zv)) * (Math.PI / 2);
-//   if (xv > 0 && zv > 0) {
-//     // 0 to pi/2
-//   } else if (xv < 0 && zv > 0) {
-//     // pi/2 -> pi
-//     rotation += Math.PI / 2;
-//   } else if (xv < 0 && zv < 0) {
-//     // pi -> 3/2 pi
-//     rotation += Math.PI;
-//   } else {
-//     // 3/2 pi to 2 pi
-//     rotation += Math.PI * 0.75;
-//   }
-//   model.rotation.y = rotation;
-
-//   model.position.x += xv;
-//   model.position.z += zv;
-// }
+  knuckles.position.x += xv;
+  knuckles.position.z += zv;
+}
 
 function animateScript() {
   detectVisibleMarkers();

@@ -174,6 +174,9 @@ function initModels() {
         break;
       case 'Six':
         loadPortal(markerRoot, false);
+        break;
+      case 'Eleven':
+        drawBoxes(markerRoot);
     }
   }
 }
@@ -396,6 +399,10 @@ function loadPhilanthropist() {
   console.log('loading philanthropist');
 }
 
+function drawBoxes(aMarkerRoot) {
+
+}
+
 // ANIMATION OF MESHES!
 //////////////////////////////////////////////////////////////////
 
@@ -461,48 +468,50 @@ function detectVisibleMarkers() {
 }
 let reversed = false;
 function updateKnuckles() {
-  // starting position
-  let xv = 0;
-  let zv = 0;
-  /*
-      If we are within .1 of -.5 for any then start adding
-     */
-  if (knuckles.position.x > 0 && knuckles.position.z < -0.55) {
-    // straight part of s on top
-    if (reversed && knuckles.position.x > 0.4) {
-      reversed = false;
-      knuckles.rotation.y -= Math.PI;
+  if (knucklesReady) {
+    // starting position
+    let xv = 0;
+    let zv = 0;
+    /*
+        If we are within .1 of -.5 for any then start adding
+      */
+    if (knuckles.position.x > 0 && knuckles.position.z < -0.55) {
+      // straight part of s on top
+      if (reversed && knuckles.position.x > 0.4) {
+        reversed = false;
+        knuckles.rotation.y -= Math.PI;
+      }
+    } else if (knuckles.position.x < 0 && knuckles.position.z < 0) {
+      // first curve
+      if (!reversed) {
+        knuckles.rotation.y += Math.PI / 90;
+      } else {
+        knuckles.rotation.y -= Math.PI / 90;
+      }
+    } else if (knuckles.position.x > 0 && knuckles.position.z < 0.55) {
+      if (!reversed) {
+        knuckles.rotation.y -= Math.PI / 90;
+      } else {
+        knuckles.rotation.y += Math.PI / 90;
+      }
+      // second curve
+    } else if (knuckles.position.x < 0 && knuckles.position.z > 0.5) {
+      // straight part of end of s
+      if (!reversed && knuckles.position.x < -0.5) {
+        reversed = true;
+        console.log('reversed flipped!');
+        knuckles.rotation.y += Math.PI;
+      }
     }
-  } else if (knuckles.position.x < 0 && knuckles.position.z < 0) {
-    // first curve
-    if (!reversed) {
-      knuckles.rotation.y += Math.PI / 90;
-    } else {
-      knuckles.rotation.y -= Math.PI / 90;
-    }
-  } else if (knuckles.position.x > 0 && knuckles.position.z < 0.55) {
-    if (!reversed) {
-      knuckles.rotation.y -= Math.PI / 90;
-    } else {
-      knuckles.rotation.y += Math.PI / 90;
-    }
-    // second curve
-  } else if (knuckles.position.x < 0 && knuckles.position.z > 0.5) {
-    // straight part of end of s
-    if (!reversed && knuckles.position.x < -0.5) {
-      reversed = true;
-      console.log('reversed flipped!');
-      knuckles.rotation.y += Math.PI;
-    }
+
+    xv = Math.sin(knuckles.rotation.y) / 100;
+    zv = Math.cos(knuckles.rotation.y) / 100;
+    console.log('rotation: ' + knuckles.rotation.y + ' xv: ' + xv);
+    console.log('rotation: ' + knuckles.rotation.y + ' zv: ' + zv);
+
+    knuckles.position.x += xv;
+    knuckles.position.z += zv;
   }
-
-  xv = Math.sin(knuckles.rotation.y) / 100;
-  zv = Math.cos(knuckles.rotation.y) / 100;
-  console.log('rotation: ' + knuckles.rotation.y + ' xv: ' + xv);
-  console.log('rotation: ' + knuckles.rotation.y + ' zv: ' + zv);
-
-  knuckles.position.x += xv;
-  knuckles.position.z += zv;
 }
 
 function animateScript() {

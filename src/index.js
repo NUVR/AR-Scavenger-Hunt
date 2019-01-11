@@ -174,6 +174,9 @@ function initModels() {
         break;
       case 'Six':
         loadPortal(markerRoot, false);
+        break;
+      case 'Eleven':
+        drawBoxes(markerRoot);
     }
   }
 }
@@ -394,6 +397,10 @@ function loadOldMen() {
 
 function loadPhilanthropist() {
   console.log('loading philanthropist');
+}
+
+function drawBoxes(aMarkerRoot) {
+
 }
 
 // ANIMATION OF MESHES!

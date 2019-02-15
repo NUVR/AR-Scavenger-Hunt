@@ -1,4 +1,6 @@
-import { THREEx } from '../lib/ar';
+import { THREEx } from 'ar';
+const { ArToolkitSource, ArToolkitContext, ArMarkerControls } = THREEx;
+console.log(THREEx);
 
 import {
   AmbientLight,
@@ -25,11 +27,9 @@ import {
   RGBFormat,
 } from 'three';
 
-import GLTFLoader from 'three-gltf-loader';
+import * as GLTFLoader from 'three-gltf-loader';
 
 import './style.scss';
-
-const { ArToolkitSource, ArToolkitContext, ArMarkerControls } = THREEx;
 
 const renderer = new WebGLRenderer({ antialias: true, alpha: true });
 const clock = new Clock();
@@ -56,7 +56,7 @@ let knucklesReady,
 
 let bostonLoadRequested = false;
 
-let markerArray;
+let markerArray: Array<any>;
 
 scene.add(light);
 scene.add(ptLight);
@@ -94,21 +94,17 @@ function initModels() {
     let markerRoot = new Group();
     scene.add(markerRoot);
     markerArray.push({ name: patternArray[i], marker: markerRoot });
-    let markerControls = new THREEx.ArMarkerControls(
-      arToolkitContext,
-      markerRoot,
-      {
-        type: 'pattern',
-        patternUrl: 'assets/Patts/' + patternArray[i] + '.patt',
-      }
-    );
+    let markerControls = new ArMarkerControls(arToolkitContext, markerRoot, {
+      type: 'pattern',
+      patternUrl: 'assets/Patts/' + patternArray[i] + '.patt',
+    });
 
     switch (patternArray[i]) {
-      case 'hiro':
+      case 'kanji':
         // will eventually load a temp model here that is used as a loading animation.
         // maybe flossing aoun?
         break;
-      case 'kanji':
+      case 'hiro':
         loader.load('assets/Models/ugandan_knuckles/scene.gltf', function(
           gltf
         ) {
@@ -117,7 +113,7 @@ function initModels() {
           knucklesMixer = new AnimationMixer(knuckles);
           const run = gltf.animations[0];
           const action = knucklesMixer.clipAction(run);
-          action.setLoop(LoopRepeat);
+          action.setLoop(LoopRepeat, -1);
           action.play();
           knuckles.position.z -= 0.6;
           knuckles.position.x = 0.45;
@@ -224,7 +220,7 @@ function render() {
 
 // INITIALIZATION OF MESHES
 ////////////////////////////////////////////////////////
-function loadBoston(aMarkerRoot) {
+function loadBoston(aMarkerRoot?: any) {
   if (!bostonLoadRequested) {
     bostonLoadRequested = true;
     progressMeter.classList.remove('hidden');
@@ -240,7 +236,7 @@ function loadBoston(aMarkerRoot) {
         bostonReady = true;
         setTimeout(() => progressMeter.classList.add('fadeout'), 5000);
         setTimeout(() => progressMeter.classList.add('hidden'), 6000);
-        let index = markerArray.findIndex(x => x.name === 'hiro'); // TODO MUST CHANGE THIS IF THE BOSTON MAP IS MOVED OFF OF HIRO
+        let index = (markerArray as any).findIndex(x => x.name === 'hiro'); // TODO MUST CHANGE THIS IF THE BOSTON MAP IS MOVED OFF OF HIRO
         markerArray[index].marker.add(bostonMap);
       },
       progressEvent => {
@@ -399,9 +395,7 @@ function loadPhilanthropist() {
   console.log('loading philanthropist');
 }
 
-function drawBoxes(aMarkerRoot) {
-
-}
+function drawBoxes(aMarkerRoot) {}
 
 // ANIMATION OF MESHES!
 //////////////////////////////////////////////////////////////////
@@ -455,7 +449,7 @@ function detectVisibleMarkers() {
       }
     }
   }
-  let video = document.getElementById('video');
+  let video = document.getElementById('video') as HTMLVideoElement;
   if (shouldWhahPlay) {
     video.play();
   } else {
@@ -525,7 +519,7 @@ function animateScript() {
 
 function addWhahVideo(aMarkerRoot) {
   let geometry = new PlaneBufferGeometry(2, 2, 4, 4);
-  let video = document.getElementById('video');
+  let video = document.getElementById('video') as HTMLVideoElement;
   let texture = new VideoTexture(video);
   texture.minFilter = LinearFilter;
   texture.magFilter = LinearFilter;

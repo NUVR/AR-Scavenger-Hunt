@@ -45,6 +45,7 @@ ptLight.position.set(3, 4, 7);
 
 // 3d models or meshes
 let bostonMap, knuckles, aoun, script, blind, portal;
+let train, oldMan1, oldMan2, richBoi;
 // gltf animation mixers
 let knucklesMixer, aounMixer;
 // is the 3d model loaded and ready to be rendered?
@@ -161,13 +162,7 @@ function initModels() {
         addWhahVideo(markerRoot);
         break;
       case 'Train':
-        loadTrain();
-        break;
-      case 'A':
-        loadOldMen();
-        break;
-      case 'B':
-        loadPhilanthropist();
+        loadTrain(markerRoot);
         break;
       case 'Five':
         loadPortal(markerRoot, true);
@@ -303,7 +298,7 @@ function movieScript(aMarkerRoot) {
   scriptReady = true;
 }
 
-function loadPortal(aMarkerRoot, isFirstPortal) {
+function loadPortal(aMarkerRoot) {
   // is firstPortal will determine which textures are loaded onto the cube later
 
   let loader = new TextureLoader();
@@ -387,16 +382,38 @@ function loadPortal(aMarkerRoot, isFirstPortal) {
   aMarkerRoot.add(skyMesh);
 }
 
-function loadTrain() {
+function loadTrain(aMarkerRoot) {
   console.log('loading train.');
-}
+  let trainGeo = new CubeGeometry(1, 1, 4);
+  let oldManGeo = new CubeGeometry(1, 1, 1);
 
-function loadOldMen() {
-  console.log('loading old men');
-}
+  let richBoiMaterial = new MeshBasicMaterial({
+    color: 0xd4af37,
+  });
+  let oldManMaterial = new MeshBasicMaterial({
+    color: 0xa3a3a3,
+  });
+  let trainMat = new MeshBasicMaterial({
+    color: 0xffffff,
+  });
 
-function loadPhilanthropist() {
-  console.log('loading philanthropist');
+  train = new Mesh(trainGeo, trainMat);
+  oldMan1 = new Mesh(oldManGeo, oldManMaterial);
+  oldMan2 = new Mesh(oldManGeo, oldManMaterial);
+  train.position.z -= 2;
+
+  oldMan1.position.x -= 1;
+  oldMan1.position.z += 2;
+
+  oldMan2.position.x -= 1;
+  oldMan2.position.z += 3.5;
+  richBoi = new Mesh(oldManGeo, richBoiMaterial);
+  richBoi.position.x += 1;
+  richBoi.position.z += 2;
+  aMarkerRoot.add(train);
+  aMarkerRoot.add(oldMan1);
+  aMarkerRoot.add(oldMan2);
+  aMarkerRoot.add(richBoi);
 }
 
 function drawBoxes(aMarkerRoot) {
@@ -419,6 +436,7 @@ function detectVisibleMarkers() {
           loadBoston();
           break;
         case 'kanji':
+          //s
           updateKnuckles();
           break;
         case 'NUvr':
@@ -546,6 +564,18 @@ function updateTrolleyGame(trolley, a, b) {
   // play corresponding animation and audio clip based on choice
   if (trolley && !prevTrolley) {
     console.log('Trolley is: ' + trolley + ' a: ' + a + ' b: ' + b);
+    if (!a) {
+      oldMan1.material.color.setHex(0x000000);
+      oldMan2.material.color.setHex(0x000000);
+    } else {
+      oldMan1.material.color.setHex(0xa3a3a3);
+      oldMan2.material.color.setHex(0xa3a3a3);
+    }
+    if (!b) {
+      richBoi.material.color.setHex(0x000000);
+    } else {
+      richBoi.material.color.setHex(0xd4af37);
+    }
   }
 }
 

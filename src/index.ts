@@ -28,6 +28,7 @@ import {
 } from 'three';
 
 import * as GLTFLoader from 'three-gltf-loader';
+console.log(GLTFLoader);
 
 import './style.scss';
 
@@ -104,7 +105,7 @@ function initModels() {
         // will eventually load a temp model here that is used as a loading animation.
         // maybe flossing aoun?
         break;
-      case 'hiro':
+      case 'Two':
         loader.load('assets/Models/ugandan_knuckles/scene.gltf', function(
           gltf
         ) {
@@ -140,7 +141,7 @@ function initModels() {
       case 'One':
         addMeshesToHole(markerRoot);
         break;
-      case 'Two':
+      case 'hiro':
         movieScript(markerRoot);
         break;
       case 'Three':

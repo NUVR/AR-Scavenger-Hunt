@@ -1,6 +1,6 @@
 
 declare module 'ar' {
-	import { Group, Matrix, Matrix4, Renderer, Camera, Texture, REVISION } from "three";
+	import { Group, Matrix, Matrix4, Renderer, Camera, Texture, REVISION, Object3D } from "three";
 
     export namespace THREEx {
         export class ArToolkitSource {
@@ -22,10 +22,28 @@ declare module 'ar' {
         }
         export class ArMarkerControls {
 			canvas: HTMLElement
-            constructor(context: ArToolkitContext, marker: Group, patternParameters: {
-                type: string,
-                patternUrl: string,
-            })
+            constructor(context: ArToolkitContext, object3d: Object3D, parameters: {
+				size?: number,
+                type: 'pattern' | 'barcode' | 'unknown',
+				patternUrl?: string,
+				barcodeValue?: string,
+				// change matrix mode - [modelViewMatrix, cameraTransformMatrix]
+				changeMatrixMode?: 'modelViewMatrix' | 'cameraTransformMatrix',
+				// minimal confidence in the marke recognition - between [0, 1] - default to 1
+				minConfidence?: 0.6,
+			})
+			dispose(): void
+			/**
+ * provide a name for a marker
+ * - silly heuristic for now
+ * - should be improved
+ */
+			name(): string
+			/**
+ * When you actually got a new modelViewMatrix, you need to perfom a whole bunch
+ * of things. it is done here.
+ */
+			updateWithModelViewMatrix(modelViewMatrix: Matrix4): void
         }
 
         export class ARClickability {}

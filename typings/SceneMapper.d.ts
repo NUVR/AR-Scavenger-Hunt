@@ -1,7 +1,7 @@
 import { Object3D } from 'three';
 
 export interface SceneMapper {
-  ASSET_URL: string;
+  ASSET_URL?: string;
   loadModel(): Promise<Object3D>;
   hasModel(): boolean;
   getModel(): Object3D;

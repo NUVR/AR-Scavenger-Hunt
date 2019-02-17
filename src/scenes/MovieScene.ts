@@ -9,8 +9,10 @@ export class MovieScene implements SceneMapper {
   private script: Object3D;
 
   async loadModel() {
+    const geometry = new CubeGeometry(2, 0.25, 8);
+
     return ModelLoader.loadTexture(this.ASSET_URL).then(texture => {
-      const geometry = new CubeGeometry(2, 0.25, 8);
+      this.texture = texture;
       // texture.wrapS = RepeatWrapping;
       // texture.wrapT = RepeatWrapping;
       const material = new MeshBasicMaterial({

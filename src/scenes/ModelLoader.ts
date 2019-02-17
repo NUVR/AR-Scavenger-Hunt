@@ -1,4 +1,5 @@
-import { GLTFLoader, GLTF, Texture, TextureLoader } from 'three';
+import { GLTF, Texture, TextureLoader } from 'three';
+import * as GLTFLoader from 'three-gltf-loader';
 
 class ModelLoader {
   private gltfLoader: GLTFLoader;
@@ -7,6 +8,7 @@ class ModelLoader {
   private cachedTextures: { [key: string]: Texture };
 
   constructor() {
+    console.log(GLTFLoader);
     this.gltfLoader = new GLTFLoader();
     this.cachedGLTF = {};
     this.textureLoader = new TextureLoader();

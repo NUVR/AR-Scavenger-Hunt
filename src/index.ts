@@ -25,6 +25,7 @@ import {
   PlaneBufferGeometry,
   LinearFilter,
   RGBFormat,
+  GLTF,
 } from 'three';
 
 import * as GLTFLoader from 'three-gltf-loader';
@@ -106,9 +107,7 @@ function initModels() {
         // maybe flossing aoun?
         break;
       case 'Two':
-        loader.load('assets/Models/ugandan_knuckles/scene.gltf', function(
-          gltf
-        ) {
+        loader.load('assets/Models/ugandan_knuckles/scene.gltf', function(gltf) {
           knuckles = gltf.scene;
           knuckles.scale.set(0.00125, 0.00125, 0.00125);
           knucklesMixer = new AnimationMixer(knuckles);
@@ -124,9 +123,7 @@ function initModels() {
         });
         break;
       case 'NUvr':
-        loader.load('assets/Models/Aoun/AounAnimatedNoTexture.gltf', function(
-          gltf
-        ) {
+        loader.load('assets/Models/Aoun/AounAnimatedNoTexture.gltf', function(gltf: GLTF) {
           aoun = gltf.scene;
           aounMixer = new AnimationMixer(aoun);
           const floss = gltf.animations[0];
@@ -184,9 +181,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 const container = document.querySelector('#rendererContainer');
 container.appendChild(renderer.domElement);
 
-arToolkitContext.init(() =>
-  camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix())
-);
+arToolkitContext.init(() => camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix()));
 arToolkitSource.init(container, onResize);
 window.addEventListener('resize', onResize);
 
@@ -241,9 +236,7 @@ function loadBoston(aMarkerRoot?: any) {
         markerArray[index].marker.add(bostonMap);
       },
       progressEvent => {
-        let progress = `${Math.floor(
-          (progressEvent.loaded / progressEvent.total) * 100
-        )}%`;
+        let progress = `${Math.floor((progressEvent.loaded / progressEvent.total) * 100)}%`;
         if (progressEvent.loaded >= progressEvent.total) {
           progress = 'Finishing up...';
         }
@@ -319,10 +312,7 @@ function loadPortal(aMarkerRoot, isFirstPortal) {
   let portalHeight = 2;
   let portalBorder = 0.1;
 
-  portal = new Mesh(
-    new PlaneGeometry(portalWidth, portalHeight),
-    defaultMaterial
-  );
+  portal = new Mesh(new PlaneGeometry(portalWidth, portalHeight), defaultMaterial);
   portal.rotation.x += Math.PI / 2;
   portal.position.y = portalHeight / 2 + portalBorder;
   portal.layers.set(1);
@@ -338,10 +328,7 @@ function loadPortal(aMarkerRoot, isFirstPortal) {
   });
 
   let portalBorderMesh = new Mesh(
-    new PlaneGeometry(
-      portalWidth + 2 * portalBorder,
-      portalHeight + 2 * portalBorder
-    ),
+    new PlaneGeometry(portalWidth + 2 * portalBorder, portalHeight + 2 * portalBorder),
     portalMaterial
   );
   portalBorderMesh.rotation.x += Math.PI / 2;

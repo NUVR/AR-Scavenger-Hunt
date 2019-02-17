@@ -1,21 +1,24 @@
 
 declare module 'ar' {
-	import { Group, Matrix, Matrix4 } from "three";
+	import { Group, Matrix, Matrix4, Renderer, Camera, Texture, REVISION } from "three";
 
     export namespace THREEx {
         export class ArToolkitSource {
 			ready: boolean
 			domElement: Element
-            constructor(parameters: {sourceType: string}) 
-            copyElementSizeTo(element: Element)
-            copySizeTo()
-            domElementHeight()
-            domElementWidth()
-            hasMobileTorch()
-            init(container: Element, onResize: () => void)
-            onResize()
-            onResizeElement()
-            toggleMobileTorch()
+            constructor(parameters: {sourceType: "webcam" | "image" | "video", sourceUrl?: string, deviceId?: number, sourceWidth?: number,
+			sourceHeight?: number,
+			displayWidth?: number,
+			displayHeight?: number}) 
+            copyElementSizeTo(otherElement: Element): void
+            copySizeTo(): void
+            domElementHeight(): number
+            domElementWidth(): number
+            hasMobileTorch(): boolean
+            init(container: Element, onReady: () => void, onError?: (error: any) => void): ArToolkitSource
+            onResize(arToolkitContext: ArToolkitContext, renderer: Renderer, camera: Camera): void
+            onResizeElement(): void
+            toggleMobileTorch(): void
         }
         export class ArMarkerControls {
 			canvas: HTMLElement
@@ -34,17 +37,31 @@ declare module 'ar' {
         // ArMultiMarkerUtils: {navigateToLearnerPage: ƒ, storeDefaultMultiMarkerFile: ƒ, createDefaultMultiMarkerFile: ƒ, createDefaultMarkersControlsParameters: ƒ, storeMarkersAreaFileFromResolution: ƒ, …}
         export class ArSmoothedControls {}
         export class ArToolkitContext {
+			baseURL: string
+			REVISION: string
 			arController: ArMarkerControls
             constructor(parameters: {
                 cameraParametersUrl: string,
-                detectionMode: string,
+				detectionMode: 'color'  | 'color_and_matrix' | 'mono' | 'mono_and_matrix',
+				trackingBackend?: "artoolkit" | "aruco" | "tango",
+				debug?: boolean,
+				maxDetectionRate?: number,
+				canvasWidth?: number,
+				canvasHeight?: number,
+				patternRatio?: number,
+				imageSmoothingEnabled?: boolean
 			})
-			init(func: () => Matrix)
+			createDefaultCamera(trackingBackend: "artoolkit" | "aruco" | "tango"): Camera
+			init(onCompleted: () => Matrix): void
 			getProjectionMatrix(): Matrix4
-			update(element: Element)
+			update(srcElement: Element): boolean
+			addMarker(arMarkerControls: ArMarkerControls): void
+			removeMarker(arMarkerControls: ArMarkerControls): void
         }
         export class ArToolkitProfile {}
-        export class ArVideoInWebgl {}
+        export class ArVideoInWebgl {
+			constructor(videoTexture: Texture)
+		}
         export class ArucoContext {}
         export class ArucoDebug {}
         export class ArucoMarkerGenerator {}

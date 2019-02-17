@@ -185,7 +185,7 @@ declare module 'ar' {
       };
       constructor(
         object3d: Object3D,
-        parameters: {
+        parameters?: {
           lerpPosition?: number;
           lerpQuaternion?: number;
           lerpScale?: number;

@@ -8,6 +8,11 @@ declare module 'ar' {
     Texture,
     REVISION,
     Object3D,
+    Raycaster,
+    Intersection,
+    Quaternion,
+    Vector3,
+    Box3,
   } from 'three';
 
   export namespace THREEx {
@@ -71,14 +76,126 @@ declare module 'ar' {
       updateWithModelViewMatrix(modelViewMatrix: Matrix4): void;
     }
 
-    export class ARClickability {}
-    export class ArBaseControls {}
-    export class ArMarkerCloak {}
-    export class ArMarkerHelper {}
-    export class ArMultiMakersLearning {}
-    export class ArMultiMarkerControls {}
+    export class ARClickability {
+      constructor(sourceElement: Element);
+      computeIntersects(domEvent: Event, objects: Object3D[]): Intersection[];
+      onResize(): void;
+      update(): Raycaster;
+    }
+    export class ArBaseControls {
+      id: number;
+      object3d: Object3D;
+      constructor(object3d: Object3D);
+      update(): void;
+      name(): string;
+      addEventListener(type: string, listener: EventListener): void;
+      dispatchEvent(event: Event): void;
+      hasEventListener(type: string, listener: EventListener): boolean;
+      removeEventListener(type: string, listener: EventListener): void;
+    }
+    export class ArMarkerCloak {
+      fragmentShader: string;
+      markerSpaceShaderFunction: string;
+      vertexShader: string;
+      constructor(videoTexture: Texture);
+    }
+    export class ArMarkerHelper {
+      object3d: Object3D;
+      constructor(markerControls: ArMarkerControls);
+    }
+    export class ArMultiMakersLearning {
+      enabled: boolean;
+      subMarkersControls: ArMarkerControls[];
+      constructor(
+        arToolkitContext: ArToolkitContext,
+        subMarkersControls: ArMarkerControls[]
+      );
+      computeResult(): void;
+      deleteResult(): void;
+      resetStats(): void;
+      toJSON(): string;
+    }
+    export class ArMultiMarkerControls {
+      parameters: {
+        subMarkersControls: ArMarkerControls[];
+        subMarkerPoses: any[];
+        changeMatrixMode?: 'modelViewMatrix' | 'cameraTransformMatrix ';
+      };
+      object3d: Object3D;
+      subMarkersControls: ArMarkerControls[];
+      subMarkerPoses: any[];
+      averageQuaternion: (
+        quaterniumSum: Quaternion,
+        newQuaternion: Quaternion,
+        firstQuaternion: Quaternion,
+        count: number,
+        quaternionAverage?: Quaternion
+      ) => Quaternion;
+      averageVector3: (
+        vector3Sum: Vector3,
+        vector3: Vector3,
+        count: number,
+        vector3Average?: Vector3
+      ) => Vector3;
+      computeBoundingBox: (jsonData: string) => Box3;
+      computeCenter: (jsonData: string) => Matrix4;
+      fromJSON: (
+        arToolkitContext: ArToolkitContext,
+        parent3D: Object3D,
+        markerRoot: Object3D,
+        jsonData: string,
+        parameters: {
+          subMarkersControls: ArMarkerControls[];
+          subMarkerPoses: any[];
+          changeMatrixMode?: 'modelViewMatrix' | 'cameraTransformMatrix ';
+        }
+      ) => ArMultiMarkerControls;
+      constructor(
+        arToolkitContext: ArToolkitContext,
+        object3d: Object3D,
+        parameters: {
+          subMarkersControls: ArMarkerControls[];
+          subMarkerPoses: any[];
+          changeMatrixMode?: 'modelViewMatrix' | 'cameraTransformMatrix ';
+        }
+      );
+      updateSmoothedControls(
+        smoothedControls: ArSmoothedControls,
+        lerpsValues: number[][]
+      ): void;
+    }
     // ArMultiMarkerUtils: {navigateToLearnerPage: ƒ, storeDefaultMultiMarkerFile: ƒ, createDefaultMultiMarkerFile: ƒ, createDefaultMarkersControlsParameters: ƒ, storeMarkersAreaFileFromResolution: ƒ, …}
-    export class ArSmoothedControls {}
+    export class ArSmoothedControls {
+      object3d: Object3D;
+      /**
+       * `lerpPosition`: lerp coeficient for the position - between [0,1] - default to 0.8
+       * `lerpQuaternion`: lerp coeficient for the quaternion - between [0,1] - default to 0.2
+       * `lerpScale`: lerp coeficient for the scale - between [0,1] - default to 0.7
+       * `lerpStepDelay`: delay for lerp fixed steps - in seconds - default to 1/60
+       * `minVisibleDelay`: minimum delay the sub-control must be visible before this controls become visible - default to 0 seconds
+       * `minUnvisibleDelay`: minimum delay the sub-control must be unvisible before this controls become unvisible - default to 0.2 seconds
+       */
+      parameters: {
+        lerpPosition: number;
+        lerpQuaternion: number;
+        lerpScale: number;
+        lerpStepDelay: number;
+        minVisibleDelay: number;
+        minUnvisibleDelay: number;
+      };
+      constructor(
+        object3d: Object3D,
+        parameters: {
+          lerpPosition?: number;
+          lerpQuaternion?: number;
+          lerpScale?: number;
+          lerpStepDelay?: number;
+          minVisibleDelay?: number;
+          minUnvisibleDelay?: number;
+        }
+      );
+      update(targetObject3d: Object3D): void;
+    }
     export class ArToolkitContext {
       baseURL: string;
       REVISION: string;

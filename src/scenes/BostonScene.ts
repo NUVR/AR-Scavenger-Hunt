@@ -13,6 +13,7 @@ export class BostonScene implements SceneMapper {
       bostonMap.rotation.x -= Math.PI / 9; // 20 degree angle?
       bostonMap.scale.set(0.75, 2, 0.75);
       this.boston = bostonMap;
+      this.boston.name = 'BostonScene';
       return bostonMap;
     });
   }

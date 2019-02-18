@@ -13,6 +13,7 @@ export class BlindScene implements SceneMapper {
       this.blind.rotation.x -= Math.PI / 2;
       this.blind.scale.set(0.25, 0.25, 0.25);
       this.blind.position.x += 0.5;
+      this.blind.name = 'BlindScene';
       return this.blind;
     });
   }

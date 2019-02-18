@@ -81,6 +81,7 @@ export class PortalScene implements SceneMapper {
       skyMesh.layers.set(2);
       this.group.add(skyMesh);
 
+      this.group.name = 'PortalScene';
       return this.group;
     });
   }

@@ -46,6 +46,7 @@ export class MeshesScene implements SceneMapper {
       const group = new Group();
       group.add(mesh1, mesh0);
       this.meshes = group;
+      this.meshes.name = 'MeshesScene';
       return this.meshes;
     });
   }

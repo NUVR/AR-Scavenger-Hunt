@@ -1,14 +1,9 @@
 import { THREEx } from 'ar';
-const { ArToolkitSource, ArToolkitContext, ArMarkerControls } = THREEx;
-console.log(THREEx);
-
 import { AmbientLight, Camera, Clock, PointLight, Scene, WebGLRenderer, Group } from 'three';
-
-import * as GLTFLoader from 'three-gltf-loader';
-console.log(GLTFLoader);
-
 import './style.scss';
-import { preload, materialMap } from './MaterialMap';
+import MaterialMap from './MaterialMap';
+
+const { ArToolkitSource, ArToolkitContext, ArMarkerControls } = THREEx;
 
 class RootScene {
   renderer: WebGLRenderer;
@@ -18,14 +13,16 @@ class RootScene {
 
   arToolkitContext: THREEx.ArToolkitContext;
   arToolkitSource: THREEx.ArToolkitSource;
+  arMarkerControls: THREEx.ArMarkerControls[];
 
   constructor() {
+    this.arMarkerControls = [];
     this.buildScene();
     this.buildDom();
     this.initModels();
   }
 
-  buildScene() {
+  buildScene = () => {
     this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
     this.clock = new Clock();
 
@@ -52,9 +49,9 @@ class RootScene {
 
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-  }
+  };
 
-  buildDom() {
+  buildDom = () => {
     const container = document.querySelector('#rendererContainer');
     container.appendChild(this.renderer.domElement);
 
@@ -63,38 +60,44 @@ class RootScene {
     );
     this.arToolkitSource.init(container, this.onResize);
     window.addEventListener('resize', this.onResize);
-  }
+  };
 
-  onResize() {
+  onResize = () => {
     this.arToolkitSource.onResizeElement();
     this.arToolkitSource.copyElementSizeTo(this.renderer.domElement);
     if (this.arToolkitContext.arController !== null) {
       this.arToolkitSource.copyElementSizeTo(this.arToolkitContext.arController.canvas);
     }
-  }
+  };
 
-  render() {
+  render = () => {
     requestAnimationFrame(this.render);
     this.renderer.render(this.scene, this.camera);
+
+    const delta = this.clock.getDelta();
+    MaterialMap.getActiveScenes().map(scene => {
+      if (scene.update) {
+        scene.update(delta);
+      }
+    });
 
     if (this.arToolkitSource.ready) {
       this.arToolkitContext.update(this.arToolkitSource.domElement);
     }
-  }
+  };
 
   initModels() {
-    preload().then(this.loadMarkers);
+    MaterialMap.preload()
+      .then(this.loadMarkers)
+      .catch(err => console.error(err));
   }
 
-  loadMarkers() {
-    const markerRoot = new Group();
-    materialMap.map(values => {
-      new ArMarkerControls(this.arToolkitContext, markerRoot, {
-        type: 'pattern',
-        patternUrl: `assets/Patts/${values.pattern}/.patt`,
-      });
-    });
-  }
+  loadMarkers = () => {
+    const markerRoots = MaterialMap.mapMarkers(this.arToolkitContext);
+    markerRoots.map(markerRoot => this.scene.add(markerRoot));
+    this.render();
+    console.log(this.scene);
+  };
 }
 
 new RootScene();

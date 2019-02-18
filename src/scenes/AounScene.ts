@@ -17,6 +17,7 @@ export class AounScene implements SceneMapper {
       action.setLoop(LoopRepeat, -1);
       action.play();
       this.aoun.rotation.x += Math.PI;
+      this.aoun.name = 'AounScene';
       return this.aoun;
     });
   }

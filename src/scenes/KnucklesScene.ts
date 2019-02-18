@@ -22,6 +22,7 @@ export class KnucklesScene implements SceneMapper {
       knuckles.position.z -= 0.6;
       knuckles.position.x = 0.45;
       knuckles.rotation.y -= Math.PI / 2;
+      knuckles.name = 'KnucklesScene';
       return this.knuckles;
     });
   }

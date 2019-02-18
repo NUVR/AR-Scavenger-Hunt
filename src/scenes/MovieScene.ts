@@ -25,6 +25,7 @@ export class MovieScene implements SceneMapper {
       script.rotation.y += Math.PI;
       script.scale.x = -1;
       this.script = script;
+      this.script.name = 'MovieScene';
       return this.script;
     });
   }

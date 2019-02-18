@@ -29,6 +29,7 @@ export class VideoScene implements SceneMapper {
       let videoMesh = new Mesh(geometry, material);
       videoMesh.rotation.x = -Math.PI / 2;
       this.videoMesh = videoMesh;
+      this.videoMesh.name = 'VideoScene';
       return this.videoMesh;
     });
   }

@@ -38,15 +38,11 @@ declare module 'ar' {
         onReady: () => void,
         onError?: (error: any) => void
       ): ArToolkitSource;
-      onResize(
-        arToolkitContext: ArToolkitContext,
-        renderer: Renderer,
-        camera: Camera
-      ): void;
+      onResize(arToolkitContext: ArToolkitContext, renderer: Renderer, camera: Camera): void;
       onResizeElement(): void;
       toggleMobileTorch(): void;
     }
-    export class ArMarkerControls {
+    export class ArMarkerControls extends ArBaseControls {
       canvas: HTMLElement;
       constructor(
         context: ArToolkitContext,
@@ -58,8 +54,8 @@ declare module 'ar' {
           barcodeValue?: string;
           // change matrix mode - [modelViewMatrix, cameraTransformMatrix]
           changeMatrixMode?: 'modelViewMatrix' | 'cameraTransformMatrix';
-          // minimal confidence in the marke recognition - between [0, 1] - default to 1
-          minConfidence?: 0.6;
+          // minimal confidence in the marker recognition - between [0, 1] - default to 1
+          minConfidence?: number;
         }
       );
       dispose(): void;
@@ -106,10 +102,7 @@ declare module 'ar' {
     export class ArMultiMakersLearning {
       enabled: boolean;
       subMarkersControls: ArMarkerControls[];
-      constructor(
-        arToolkitContext: ArToolkitContext,
-        subMarkersControls: ArMarkerControls[]
-      );
+      constructor(arToolkitContext: ArToolkitContext, subMarkersControls: ArMarkerControls[]);
       computeResult(): void;
       deleteResult(): void;
       resetStats(): void;
@@ -159,10 +152,7 @@ declare module 'ar' {
           changeMatrixMode?: 'modelViewMatrix' | 'cameraTransformMatrix ';
         }
       );
-      updateSmoothedControls(
-        smoothedControls: ArSmoothedControls,
-        lerpsValues: number[][]
-      ): void;
+      updateSmoothedControls(smoothedControls: ArSmoothedControls, lerpsValues: number[][]): void;
     }
     // ArMultiMarkerUtils: {navigateToLearnerPage: ƒ, storeDefaultMultiMarkerFile: ƒ, createDefaultMultiMarkerFile: ƒ, createDefaultMarkersControlsParameters: ƒ, storeMarkersAreaFileFromResolution: ƒ, …}
     export class ArSmoothedControls {
@@ -202,11 +192,7 @@ declare module 'ar' {
       arController: ArMarkerControls;
       constructor(parameters: {
         cameraParametersUrl: string;
-        detectionMode:
-          | 'color'
-          | 'color_and_matrix'
-          | 'mono'
-          | 'mono_and_matrix';
+        detectionMode: 'color' | 'color_and_matrix' | 'mono' | 'mono_and_matrix';
         trackingBackend?: 'artoolkit' | 'aruco' | 'tango';
         debug?: boolean;
         maxDetectionRate?: number;
@@ -215,9 +201,7 @@ declare module 'ar' {
         patternRatio?: number;
         imageSmoothingEnabled?: boolean;
       });
-      createDefaultCamera(
-        trackingBackend: 'artoolkit' | 'aruco' | 'tango'
-      ): Camera;
+      createDefaultCamera(trackingBackend: 'artoolkit' | 'aruco' | 'tango'): Camera;
       init(onCompleted: () => Matrix): void;
       getProjectionMatrix(): Matrix4;
       update(srcElement: Element): boolean;

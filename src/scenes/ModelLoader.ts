@@ -8,14 +8,13 @@ class ModelLoader {
   private cachedTextures: { [key: string]: Texture };
 
   constructor() {
-    console.log(GLTFLoader);
     this.gltfLoader = new GLTFLoader();
     this.cachedGLTF = {};
     this.textureLoader = new TextureLoader();
     this.cachedTextures = {};
   }
 
-  async loadModel(model: string) {
+  async loadModel(model: string, onProgressEvent?: (progress: ProgressEvent) => void) {
     return new Promise((resolve: (gltf: GLTF) => void, reject: (error: any) => void) => {
       if (this.cachedGLTF[model]) {
         resolve(this.cachedGLTF[model]);
@@ -26,12 +25,13 @@ class ModelLoader {
           this.cachedGLTF[model] = gltf;
           resolve(gltf);
         },
-        error => reject(error)
+        onProgressEvent ? onProgressEvent : null,
+        (error: any) => reject(error)
       );
     });
   }
 
-  async loadTexture(textureFile: string) {
+  async loadTexture(textureFile: string, onProgressEvent?: (progress: ProgressEvent) => void) {
     return new Promise((resolve: (texture: Texture) => void, reject: (error: any) => void) => {
       if (this.cachedTextures[textureFile]) {
         resolve(this.cachedTextures[textureFile]);
@@ -42,6 +42,7 @@ class ModelLoader {
           this.cachedTextures[textureFile] = texture;
           resolve(texture);
         },
+        onProgressEvent ? onProgressEvent : null,
         error => reject(error)
       );
     });

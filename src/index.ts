@@ -1,4 +1,5 @@
 import { THREEx } from 'ar';
+console.log(THREEx);
 import { AmbientLight, Camera, Clock, PointLight, Scene, WebGLRenderer } from 'three';
 import './style.scss';
 import MaterialMap from './MaterialMap';

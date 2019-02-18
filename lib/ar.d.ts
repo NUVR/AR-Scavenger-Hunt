@@ -16,6 +16,45 @@ declare module 'ar' {
   } from 'three';
 
   export namespace THREEx {
+    type SubMarkersControls = {
+      parameters: {};
+      poseMatrix: number[];
+    };
+    type TrackingBackend = 'artoolkit' | 'aruco' | 'tango';
+    type TrackingFile = {
+      meta: {
+        createdBy: string;
+        createdAt: string;
+      };
+      trackingBackend: TrackingBackend;
+      subMarkersControls: SubMarkersControls[];
+    };
+    type MarkerControlsType = 'pattern' | 'barcode' | 'unknown';
+    type MatrixMode = 'modelViewMatrix' | 'cameraTransformMatrix';
+    type DetectionMode = 'color' | 'color_and_matrix' | 'mono' | 'mono_and_matrix';
+
+    export class ArToolkitContext {
+      baseURL: string;
+      REVISION: string;
+      arController: ArMarkerControls;
+      constructor(parameters: {
+        cameraParametersUrl: string;
+        detectionMode: DetectionMode;
+        trackingBackend?: TrackingBackend;
+        debug?: boolean;
+        maxDetectionRate?: number;
+        canvasWidth?: number;
+        canvasHeight?: number;
+        patternRatio?: number;
+        imageSmoothingEnabled?: boolean;
+      });
+      createDefaultCamera(trackingBackend: TrackingBackend): Camera;
+      init(onCompleted: () => Matrix): void;
+      getProjectionMatrix(): Matrix4;
+      update(srcElement: Element): boolean;
+      addMarker(arMarkerControls: ArMarkerControls): void;
+      removeMarker(arMarkerControls: ArMarkerControls): void;
+    }
     export class ArToolkitSource {
       ready: boolean;
       domElement: Element;
@@ -49,11 +88,11 @@ declare module 'ar' {
         object3d: Object3D,
         parameters: {
           size?: number;
-          type: 'pattern' | 'barcode' | 'unknown';
+          type: MarkerControlsType;
           patternUrl?: string;
           barcodeValue?: string;
           // change matrix mode - [modelViewMatrix, cameraTransformMatrix]
-          changeMatrixMode?: 'modelViewMatrix' | 'cameraTransformMatrix';
+          changeMatrixMode?: MatrixMode;
           // minimal confidence in the marker recognition - between [0, 1] - default to 1
           minConfidence?: number;
         }
@@ -101,8 +140,8 @@ declare module 'ar' {
     }
     export class ArMultiMakersLearning {
       enabled: boolean;
-      subMarkersControls: ArMarkerControls[];
-      constructor(arToolkitContext: ArToolkitContext, subMarkersControls: ArMarkerControls[]);
+      subMarkersControls: SubMarkersControls[];
+      constructor(arToolkitContext: ArToolkitContext, subMarkersControls: SubMarkersControls[]);
       computeResult(): void;
       deleteResult(): void;
       resetStats(): void;
@@ -154,7 +193,31 @@ declare module 'ar' {
       );
       updateSmoothedControls(smoothedControls: ArSmoothedControls, lerpsValues: number[][]): void;
     }
-    // ArMultiMarkerUtils: {navigateToLearnerPage: ƒ, storeDefaultMultiMarkerFile: ƒ, createDefaultMultiMarkerFile: ƒ, createDefaultMarkersControlsParameters: ƒ, storeMarkersAreaFileFromResolution: ƒ, …}
+    export class ArMultiMarkerUtils {
+      buildMarkersAreaFileFromResolution: (
+        trackingBackend: TrackingBackend,
+        resolutionW: number,
+        resolutionH: number
+      ) => TrackingFile;
+      buildSubMarkerControls: (
+        layout: 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright',
+        positionX: number,
+        positionZ: number
+      ) => SubMarkersControls;
+      createDefaultMarkersControlsParameters: (
+        trackingBackend: TrackingBackend
+      ) => { type: MarkerControlsType; patternUrl?: string; barcodeValue?: number }[];
+      createDefaultMultiMarkerFile: (trackingBackend: TrackingBackend) => TrackingFile;
+      navigateToLearnerPage: (learnerBaseURL: string, trackingBackend: TrackingBackend) => void;
+      storeDefaultMultiMarkerFile: (trackingBackend: TrackingBackend) => void;
+      storeMarkersAreaFileFromResolution: (
+        trackingBackend: TrackingBackend,
+        resolutionW: number,
+        resolutionH: number
+      ) => void;
+      constructor(trackingBackend: TrackingBackend);
+    }
+
     export class ArSmoothedControls {
       object3d: Object3D;
       /**
@@ -186,37 +249,82 @@ declare module 'ar' {
       );
       update(targetObject3d: Object3D): void;
     }
-    export class ArToolkitContext {
-      baseURL: string;
-      REVISION: string;
-      arController: ArMarkerControls;
-      constructor(parameters: {
+    export class ArToolkitProfile {
+      defaultMarkerParameters: {
+        type: MarkerControlsType;
+        patternUrl?: string;
+        barcodeValue?: number;
+        changeMatrixMode: MatrixMode;
+      };
+      sourceParameters: {
+        sourceType: 'webcam' | 'video' | 'image';
+        sourceUrl?: string;
+      };
+      contextParameters: {
+        detectionMode: DetectionMode;
         cameraParametersUrl: string;
-        detectionMode: 'color' | 'color_and_matrix' | 'mono' | 'mono_and_matrix';
-        trackingBackend?: 'artoolkit' | 'aruco' | 'tango';
-        debug?: boolean;
-        maxDetectionRate?: number;
-        canvasWidth?: number;
-        canvasHeight?: number;
-        patternRatio?: number;
-        imageSmoothingEnabled?: boolean;
-      });
-      createDefaultCamera(trackingBackend: 'artoolkit' | 'aruco' | 'tango'): Camera;
-      init(onCompleted: () => Matrix): void;
-      getProjectionMatrix(): Matrix4;
-      update(srcElement: Element): boolean;
-      addMarker(arMarkerControls: ArMarkerControls): void;
-      removeMarker(arMarkerControls: ArMarkerControls): void;
+        canvasWidth: number;
+        canvasHeight: number;
+        maxDetectionRate: number;
+      };
+      changeMatrixMode: (changeMatrixMode: MatrixMode) => ArToolkitProfile;
+      checkIfValid: () => ArToolkitProfile;
+      defaultMarker: (trackingBackend: TrackingBackend) => ArToolkitProfile;
+      performance: (
+        label: 'default' | 'desktop-fast' | 'desktop-normal' | 'phone-normal' | 'phone-slow'
+      ) => ArToolkitProfile;
+      reset: () => ArToolkitProfile;
+      sourceImage: (url: string) => ArToolkitProfile;
+      sourceVideo: (url: string) => ArToolkitProfile;
+      sourceWebcam: () => ArToolkitProfile;
+      trackingBackend: (trackingBackend: TrackingBackend) => ArToolkitProfile;
+      trackingMethod: (trackingMethod: any) => ArToolkitProfile;
     }
-    export class ArToolkitProfile {}
     export class ArVideoInWebgl {
       constructor(videoTexture: Texture);
     }
-    export class ArucoContext {}
-    export class ArucoDebug {}
-    export class ArucoMarkerGenerator {}
-    export class HitTestingPlane {}
-    export class HitTestingTango {}
-    export class addArucoDatGui {}
+    export class ArucoContext {
+      canvas: HTMLCanvasElement;
+      detector: any; // AR.Detector
+      constructor(parameters?: { debug?: boolean; canvasWidth: number; canvasHeight: number });
+      detect(videoElement: HTMLVideoElement): any; // DetectedMarkers
+      setSize(width: number, height: number): void;
+      updateObject3D(
+        object3D: Object3D,
+        arucoPosit: any,
+        markerSize: number,
+        detectedMarker: any
+      ): void;
+    }
+    export class ArucoDebug {
+      arucoContext: ArucoContext;
+      canvasElement: HTMLCanvasElement;
+      constructor(arucoContext: ArucoContext);
+      clear(): void;
+      copyCVImage2ImageData(cvImage: any, imageData: ImageData): void;
+      drawCVImage(cvImage: any): void;
+      drawContours(
+        contours: any[],
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        fn: (hole: string) => string
+      ): void;
+      drawContoursCandidates(): void;
+      drawContoursContours(): void;
+      drawContoursPolys(): void;
+      drawDetectorGrey(): void;
+      drawDetectorThreshold(): void;
+      drawMarkerCorners(markers: any[]): void;
+      drawMarkerIDs(markers: any[]): void;
+      drawVideo(videoElement: HTMLVideoElement): void;
+      setSize(width: number, height: number): void;
+    }
+    export class ArucoMarkerGenerator {
+      createCanvas(markerId: string, width: number): HTMLCanvasElement;
+      createImage(markerId: string, width: number): HTMLImageElement;
+      createSVG(markerId: string, svgSize: number): HTMLDivElement;
+    }
   }
 }

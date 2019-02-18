@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "sourceMap": true,
     "module": "commonjs",
     "lib": ["esnext", "dom"],

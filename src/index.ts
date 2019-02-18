@@ -1,9 +1,9 @@
 import { THREEx } from 'ar';
-import { AmbientLight, Camera, Clock, PointLight, Scene, WebGLRenderer, Group } from 'three';
+import { AmbientLight, Camera, Clock, PointLight, Scene, WebGLRenderer } from 'three';
 import './style.scss';
 import MaterialMap from './MaterialMap';
 
-const { ArToolkitSource, ArToolkitContext, ArMarkerControls } = THREEx;
+const { ArToolkitSource, ArToolkitContext } = THREEx;
 
 class RootScene {
   renderer: WebGLRenderer;

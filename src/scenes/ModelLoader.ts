@@ -1,6 +1,5 @@
 import { GLTF, Texture, TextureLoader } from 'three';
-import GLTFLoader from 'three-gltf-loader'
-console.log(GLTFLoader)
+import GLTFLoader from 'three-gltf-loader';
 
 class ModelLoader {
   private gltfLoader: GLTFLoader;

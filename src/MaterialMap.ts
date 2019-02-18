@@ -62,7 +62,9 @@ class MaterialMap {
         };
         const { modelLoader } = values;
         if (modelLoader.hasModel()) {
-          markerRoot.add(modelLoader.getModel());
+          const model = modelLoader.getModel();
+          markerRoot.add(model);
+          markerRoot.name = model.name.split('Scene')[0];
         } else {
           console.error(`Unable to load model for ${values.pattern}`);
           return null;

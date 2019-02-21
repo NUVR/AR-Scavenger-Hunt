@@ -10,17 +10,19 @@ import {
 } from './scenes';
 import { Group } from 'three';
 import { THREEx } from 'ar';
+import { TrolleyScene } from './scenes/TrolleyScene';
 
 type MatMap = { pattern: Patterns; modelLoader: SceneMapper };
 
 const materialMap: MatMap[] = [
-  { pattern: 'One', modelLoader: new MeshesScene() },
-  { pattern: 'Two', modelLoader: new KnucklesScene() },
-  { pattern: 'Three', modelLoader: new BlindScene() },
-  { pattern: 'Four', modelLoader: new VideoScene() },
-  { pattern: 'Five', modelLoader: new PortalScene() },
-  { pattern: 'NUvr', modelLoader: new AounScene() },
-  { pattern: 'hiro', modelLoader: new MovieScene() },
+  { pattern: 'One', modelLoader: new MeshesScene() }, // D
+  { pattern: 'Two', modelLoader: new KnucklesScene() }, // S
+  { pattern: 'Three', modelLoader: new BlindScene() }, // E
+  { pattern: 'Four', modelLoader: new VideoScene() }, // Y
+  { pattern: 'Five', modelLoader: new PortalScene() }, // R
+  { pattern: 'NUvr', modelLoader: new AounScene() }, // No letter/Hint just promotional
+  { pattern: 'hiro', modelLoader: new MovieScene() }, // Bee movie B
+  { pattern: 'Train', modelLoader: new TrolleyScene() }, // o
 ];
 
 class MaterialMap {
@@ -54,7 +56,7 @@ class MaterialMap {
         const arMarkerControls = new THREEx.ArMarkerControls(context, markerRoot, {
           type: 'pattern',
           patternUrl: `assets/Patts/${values.pattern}.patt`,
-          minConfidence: 0.2,
+          // minConfidence: 0.2,
         });
         this.sceneControls[`${arMarkerControls.id}`] = {
           matMap: values,

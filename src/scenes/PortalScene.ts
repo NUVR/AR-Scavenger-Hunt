@@ -13,7 +13,6 @@ import {
 import ModelLoader from './ModelLoader';
 
 export class PortalScene implements SceneMapper {
-  ASSET_URL = 'images/sphere-colored.png';
   TEXTURES = [
     'assets/Textures/mountain/posx.jpg',
     'assets/Textures/mountain/negx.jpg',
@@ -21,6 +20,7 @@ export class PortalScene implements SceneMapper {
     'assets/Textures/mountain/negy.jpg',
     'assets/Textures/mountain/posz.jpg',
     'assets/Textures/mountain/negz.jpg',
+    'assets/Textures/mountain/sphere-colored.png',
   ];
 
   private textures: Texture[];
@@ -28,7 +28,6 @@ export class PortalScene implements SceneMapper {
 
   async loadModel() {
     const promises = this.TEXTURES.map(texture => ModelLoader.loadTexture(texture));
-    promises.push(ModelLoader.loadTexture(this.ASSET_URL));
     return Promise.all(promises).then(textures => {
       this.textures = textures;
       this.group = new Group();
@@ -54,7 +53,7 @@ export class PortalScene implements SceneMapper {
       portal.layers.set(1);
       this.group.add(portal);
 
-      // TODO: camera.layers.enable(1);
+      // TODO? camera.layers.enable(1); set up in index.ts?
 
       const portalMaterial = new MeshBasicMaterial({
         color: 0xffff00,
@@ -92,5 +91,8 @@ export class PortalScene implements SceneMapper {
 
   getModel() {
     return this.group;
+  }
+  update() {
+    // TODO: needs to do some fancy layer work directly effecting the camera and the renderer
   }
 }

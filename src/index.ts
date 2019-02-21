@@ -27,6 +27,7 @@ class RootScene {
     this.clock = new Clock();
 
     this.camera = new Camera();
+    this.camera.layers.enable(1);
     const scene = new Scene();
     scene.add(this.camera);
     scene.visible = true;

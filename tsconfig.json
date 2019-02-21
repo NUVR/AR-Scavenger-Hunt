@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "module": "commonjs",
+    "lib": ["esnext", "dom"],
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "typeRoots": ["node_modules/@types", "typings"],
+    "baseUrl": ".",
+    "paths": {
+      "*": ["./typings/*"]
+    }
+  }
+}

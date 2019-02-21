@@ -12,8 +12,9 @@ const dev = process.env.NODE_ENV !== 'production';
 
 module.exports = {
   entry: {
-    app: './src/index.js',
+    app: './src/index.ts',
   },
+  devtool: 'inline-source-map',
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new CleanWebpackPlugin(['dist']),
@@ -30,6 +31,10 @@ module.exports = {
   },
   node: {
     fs: 'empty',
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+    modules: [path.resolve(__dirname, 'lib'), 'node_modules'],
   },
   module: {
     rules: [
@@ -57,6 +62,11 @@ module.exports = {
           'postcss-loader',
           'sass-loader',
         ],
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       },
       {
         test: /\.(png|svg|jpg|gif)$/,

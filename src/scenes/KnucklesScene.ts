@@ -1,18 +1,17 @@
-import { SceneMapper } from 'SceneMapper';
-import { Object3D, AnimationMixer, LoopRepeat } from 'three';
+import { AnimationMixer, LoopRepeat } from 'three';
 import ModelLoader from './ModelLoader';
+import { AbstractScene } from './AbstractScene';
 
-export class KnucklesScene implements SceneMapper {
+export class KnucklesScene extends AbstractScene {
   ASSET_URL = 'assets/Models/ugandan_knuckles/scene.gltf';
 
-  private knuckles: Object3D;
   private knucklesMixer: AnimationMixer;
   private reversed = false;
 
   async loadModel() {
     return ModelLoader.loadModel(this.ASSET_URL).then(gltf => {
-      this.knuckles = gltf.scene;
-      const knuckles = this.knuckles;
+      this.model = gltf.scene;
+      const knuckles = this.model;
       knuckles.scale.set(0.00125, 0.00125, 0.00125);
       this.knucklesMixer = new AnimationMixer(knuckles);
       const run = gltf.animations[0];
@@ -23,17 +22,17 @@ export class KnucklesScene implements SceneMapper {
       knuckles.position.x = 0.45;
       knuckles.rotation.y -= Math.PI / 2;
       knuckles.name = 'KnucklesScene';
-      return this.knuckles;
+      return this.model;
     });
   }
 
-  update(delta: number) {
+  update = (delta: number) => {
     this.knucklesMixer.update(delta);
     this.updateKnucklesPosition();
-  }
+  };
 
   updateKnucklesPosition() {
-    const knuckles = this.knuckles;
+    const knuckles = this.model;
     if (!knuckles) {
       return;
     }
@@ -80,13 +79,5 @@ export class KnucklesScene implements SceneMapper {
 
     knuckles.position.x += xv;
     knuckles.position.z += zv;
-  }
-
-  hasModel() {
-    return !!this.knuckles;
-  }
-
-  getModel() {
-    return this.knuckles;
   }
 }

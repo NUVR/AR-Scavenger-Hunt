@@ -11,8 +11,9 @@ import {
   Group,
 } from 'three';
 import ModelLoader from './ModelLoader';
+import { AbstractScene } from './AbstractScene';
 
-export class PortalScene implements SceneMapper {
+export class PortalScene extends AbstractScene {
   ASSET_URL = 'images/sphere-colored.png';
   TEXTURES = [
     'assets/Textures/mountain/posx.jpg',
@@ -24,14 +25,13 @@ export class PortalScene implements SceneMapper {
   ];
 
   private textures: Texture[];
-  private group: Object3D;
 
   async loadModel() {
     const promises = this.TEXTURES.map(texture => ModelLoader.loadTexture(texture));
     promises.push(ModelLoader.loadTexture(this.ASSET_URL));
     return Promise.all(promises).then(textures => {
       this.textures = textures;
-      this.group = new Group();
+      this.model = new Group();
 
       const skyTextures = textures.slice(0, 6);
       const defaultTexture = textures[6];
@@ -52,7 +52,7 @@ export class PortalScene implements SceneMapper {
       portal.rotation.x += Math.PI / 2;
       portal.position.y = portalHeight / 2 + portalBorder;
       portal.layers.set(1);
-      this.group.add(portal);
+      this.model.add(portal);
 
       // TODO: camera.layers.enable(1);
 
@@ -69,7 +69,7 @@ export class PortalScene implements SceneMapper {
       portalBorderMesh.rotation.x += Math.PI / 2;
       portalBorderMesh.position.y = portal.position.y;
       portalBorderMesh.layers.set(0);
-      this.group.add(portalBorderMesh);
+      this.model.add(portalBorderMesh);
 
       // the world beyond the portal
       // textures from http://www.humus.name/
@@ -79,18 +79,10 @@ export class PortalScene implements SceneMapper {
       const skyMesh = new Mesh(new CubeGeometry(30, 30, 30), skyMaterialArray);
       skyMesh.rotation.x -= Math.PI / 2;
       skyMesh.layers.set(2);
-      this.group.add(skyMesh);
+      this.model.add(skyMesh);
 
-      this.group.name = 'PortalScene';
-      return this.group;
+      this.model.name = 'PortalScene';
+      return this.model;
     });
-  }
-
-  hasModel() {
-    return !!this.group;
-  }
-
-  getModel() {
-    return this.group;
   }
 }

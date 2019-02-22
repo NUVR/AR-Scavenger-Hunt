@@ -7,7 +7,6 @@ const { ArToolkitSource, ArToolkitContext } = THREEx;
 
 class RootScene {
   renderer: WebGLRenderer;
-  clock: Clock;
   camera: Camera;
   scene: Scene;
 
@@ -24,7 +23,6 @@ class RootScene {
 
   buildScene = () => {
     this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
-    this.clock = new Clock();
 
     this.camera = new Camera();
     const scene = new Scene();
@@ -73,13 +71,6 @@ class RootScene {
   render = () => {
     requestAnimationFrame(this.render);
     this.renderer.render(this.scene, this.camera);
-
-    const delta = this.clock.getDelta();
-    MaterialMap.getActiveScenes().map(scene => {
-      if (scene.update) {
-        scene.update(delta);
-      }
-    });
 
     if (this.arToolkitSource.ready) {
       this.arToolkitContext.update(this.arToolkitSource.domElement);

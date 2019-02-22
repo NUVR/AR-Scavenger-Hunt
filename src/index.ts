@@ -55,8 +55,8 @@ class RootScene {
     }
   };
 
-  render = () => {
-    requestAnimationFrame(this.render);
+  animate = () => {
+    requestAnimationFrame(this.animate);
     this.scene.render(this.renderer);
 
     if (this.arToolkitSource.ready) {
@@ -73,7 +73,7 @@ class RootScene {
   loadMarkers = () => {
     const markerRoots = MaterialMap.mapMarkers(this.arToolkitContext);
     markerRoots.map(markerRoot => this.scene.add(markerRoot));
-    this.render();
+    this.animate();
     console.log(this.scene);
   };
 }

@@ -25,11 +25,13 @@ jobs:
           paths:
             - /tmp/git-lfs.tar.gz
       - run:
+          name: Download Git LFS files
+          command: |
+            git lfs install
+            git lfs pull
+      - run:
           name: Install NPM modules
           command: |
-            # git lfs install
-            git lfs fetch
-            git lfs pull
             yarn cache dir
             yarn install --frozen-lockfile
             yarn add firebase-tools

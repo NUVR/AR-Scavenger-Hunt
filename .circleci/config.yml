@@ -1,8 +1,7 @@
 version: 2
 
-jobs:
-  build:
-    docker:
+build-job:
+  docker:
       - image: circleci/node:8.15.0
     steps:
       - checkout
@@ -27,6 +26,19 @@ jobs:
           name: Build the project to dist
           command: yarn build
 
+deploy-job:
+  docker:
+      - image: circleci/node:8.15.0
+    steps:
       - run:
           name: Deploy to Firebase
           command: ./node_modules/.bin/firebase deploy --token=$FIREBASE_DEPLOY_TOKEN
+
+workflows:
+  version: 2
+  -deploy:
+    jobs:
+      - build-job
+      - deploy-job:
+          requires:
+            - build-job

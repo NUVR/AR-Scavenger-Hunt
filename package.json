@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "build": "webpack --config webpack.prod.js",
-    "deploy": "yarn run firebase deploy --token=$FIREBASE_TOKEN",
+    "deploy": "yarn run firebase deploy --token=$FIREBASE_DEPLOY_TOKEN",
     "start": "webpack-dev-server --config webpack.dev.js",
     "prettier": "./node_modules/.bin/prettier"
   },

@@ -27,7 +27,7 @@ jobs:
       - run:
           name: Download Git LFS files
           command: |
-            git lfs install
+            sudo git lfs install
             git lfs pull
       - run:
           name: Install NPM modules

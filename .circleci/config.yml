@@ -5,6 +5,7 @@ jobs:
     docker:
       - image: circleci/node:8.15.0
     steps:
+      - checkout
       - restore_cache:
           keys:
             - git-lfs-install
@@ -26,7 +27,6 @@ jobs:
           key: git-lfs-install
           paths:
             - /tmp/git-lfs.tar.gz
-      - checkout
       - run:
           name: Install NPM modules
           command: |

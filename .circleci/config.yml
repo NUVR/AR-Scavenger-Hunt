@@ -11,9 +11,15 @@ jobs:
             - yarn-v1-{{ checksum "yarn.lock" }}
             - yarn-v1-
       - run:
-          name: Pull Git LFS files
+          name: Install Git LFS and pull files
           command: |
-            git lfs pull
+          if ! [ -x "$(command -v git-lfs)" ]; then
+              curl -L -o /tmp/git-lfs.tar.gz \
+                https://github.com/git-lfs/git-lfs/releases/download/v2.7.1/git-lfs-linux-amd64-v2.7.1.tar.gz
+              tar xf /tmp/git-lfs.tar.gz -C /tmp
+              sudo /tmp/git-lfs-2.4.0/install.sh
+          fi
+          git lfs pull
       - run:
           name: Install NPM modules
           command: |

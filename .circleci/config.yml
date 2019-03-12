@@ -17,8 +17,7 @@ jobs:
                 curl -L -o /tmp/git-lfs.tar.gz \
                   https://github.com/git-lfs/git-lfs/releases/download/v2.7.1/git-lfs-linux-amd64-v2.7.1.tar.gz
                 tar xf /tmp/git-lfs.tar.gz -C /tmp
-                ls /tmp/git-lfs
-                sudo /tmp/git-lfs/install.sh
+                sudo /tmp/install.sh
             fi
             git lfs pull
       - run:

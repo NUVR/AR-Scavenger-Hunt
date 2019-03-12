@@ -15,13 +15,17 @@ jobs:
             - v1-dependencies-
 
       - run:
-          name: Install dependencies and build
-          command: yarn && yarn build
+          name: Install dependencies
+          command: yarn
 
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          name: Build the project to dist
+          command: yarn build
 
       - run:
           name: Deploy to Firebase

@@ -11,6 +11,10 @@ jobs:
             - yarn-v1-{{ checksum "yarn.lock" }}
             - yarn-v1-
       - run:
+          name: Pull Git LFS files
+          command: |
+            git lfs pull
+      - run:
           name: Install NPM modules
           command: |
             yarn cache dir

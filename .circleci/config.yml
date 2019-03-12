@@ -2,37 +2,37 @@ version: 2
 
 build-job:
   docker:
-      - image: circleci/node:8.15.0
-    steps:
-      - checkout
+    - image: circleci/node:8.15.0
+  steps:
+    - checkout
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+    # Download and cache dependencies
+    - restore_cache:
+        keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
 
-      - run:
-          name: Install dependencies
-          command: yarn
+    - run:
+        name: Install dependencies
+        command: yarn
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+    - save_cache:
+        paths:
+          - node_modules
+        key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run:
-          name: Build the project to dist
-          command: yarn build
+    - run:
+        name: Build the project to dist
+        command: yarn build
 
 deploy-job:
   docker:
-      - image: circleci/node:8.15.0
-    steps:
-      - run:
-          name: Deploy to Firebase
-          command: ./node_modules/.bin/firebase deploy --token=$FIREBASE_DEPLOY_TOKEN
+    - image: circleci/node:8.15.0
+  steps:
+    - run:
+        name: Deploy to Firebase
+        command: ./node_modules/.bin/firebase deploy --token=$FIREBASE_DEPLOY_TOKEN
 
 workflows:
   version: 2

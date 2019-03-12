@@ -12,7 +12,7 @@ jobs:
             - yarn-v1-{{ checksum "yarn.lock" }}
             - yarn-v1-
       - run:
-          name: Install Git LFS and pull files
+          name: Install Git LFS
           command: |
             if ! [ -f /tmp/git-lfs.tar.gz ]; then
                 curl -L -o /tmp/git-lfs.tar.gz \
@@ -20,9 +20,6 @@ jobs:
             fi
             tar xf /tmp/git-lfs.tar.gz -C /tmp
             sudo /tmp/install.sh
-            git lfs update --force
-            git lfs install
-            git lfs pull
       - save_cache:
           key: git-lfs-install
           paths:
@@ -30,6 +27,8 @@ jobs:
       - run:
           name: Install NPM modules
           command: |
+            git lfs install
+            # git lfs pull
             yarn cache dir
             yarn install --frozen-lockfile
             yarn add firebase-tools

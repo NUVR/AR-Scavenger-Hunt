@@ -19,6 +19,7 @@ jobs:
                 tar xf /tmp/git-lfs.tar.gz -C /tmp
                 sudo /tmp/install.sh
             fi
+            git lfs update --force
             git lfs install
             git lfs pull
       - run:

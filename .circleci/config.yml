@@ -3,12 +3,26 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node
+      - image: circleci/node:7.10
     steps:
       - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
       - run:
           name: Install dependencies and build
           command: yarn && yarn build
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
       - run:
           name: Deploy to Firebase
           command: ./node_modules/.bin/firebase deploy --token=$FIREBASE_DEPLOY_TOKEN

@@ -28,7 +28,7 @@ jobs:
           name: Install NPM modules
           command: |
             # git lfs install
-            GIT_CURL_VERBOSE=1 git lfs fetch
+            git lfs fetch
             yarn cache dir
             yarn install --frozen-lockfile
             yarn add firebase-tools

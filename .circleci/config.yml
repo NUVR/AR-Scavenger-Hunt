@@ -1,44 +1,39 @@
 version: 2
 
-build-job:
-  docker:
-    - image: circleci/node:8.15.0
-  steps:
-    - checkout
-
-    # Download and cache dependencies
-    - restore_cache:
-        keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-    - run:
-        name: Install dependencies
-        command: yarn
-
-    - save_cache:
-        paths:
-          - node_modules
-        key: v1-dependencies-{{ checksum "package.json" }}
-
-    - run:
-        name: Build the project to dist
-        command: yarn build
-
-deploy-job:
-  docker:
-    - image: circleci/node:8.15.0
-  steps:
-    - run:
-        name: Deploy to Firebase
-        command: ./node_modules/.bin/firebase deploy --token=$FIREBASE_DEPLOY_TOKEN
-
-workflows:
-  version: 2
-  -deploy:
-    jobs:
-      - build-job
-      - deploy-job:
-          requires:
-            - build-job
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8.15.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-v1-{{ checksum "yarn.lock" }}
+            - yarn-v1-
+      - run:
+          name: Install NPM modules
+          command: |
+            yarn cache dir
+            yarn install --frozen-lockfile
+            yarn add firebase-tools
+            yarn run firebase --version
+      - save_cache:
+          key: yarn-v1-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn/v1
+      - run:
+          name: Build
+          command: |
+            yarn build
+      - run:
+          name: Test
+          command: |
+            yarn lint
+            yarn test --forceExit
+      - run:
+          name: Deploy
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              yarn run firebase use dev
+              yarn run firebase deploy --token=$FIREBASE_TOKEN
+            fi

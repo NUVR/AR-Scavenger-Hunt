@@ -29,6 +29,7 @@ jobs:
           command: |
             # git lfs install
             git lfs fetch
+            git lfs pull
             yarn cache dir
             yarn install --frozen-lockfile
             yarn add firebase-tools

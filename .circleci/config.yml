@@ -5,12 +5,9 @@ jobs:
     docker:
       - image: circleci/node:8.15.0
     steps:
-      - checkout
       - restore_cache:
           keys:
             - git-lfs-install
-            - yarn-v1-{{ checksum "yarn.lock" }}
-            - yarn-v1-
       - run:
           name: Install Git LFS
           command: |
@@ -20,14 +17,20 @@ jobs:
             fi
             tar xf /tmp/git-lfs.tar.gz -C /tmp
             sudo /tmp/install.sh
+            git lfs install
       - save_cache:
           key: git-lfs-install
           paths:
             - /tmp/git-lfs.tar.gz
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-v1-{{ checksum "yarn.lock" }}
+            - yarn-v1-
       - run:
           name: Download Git LFS files
           command: |
-            sudo git lfs install
+            # sudo git lfs install
             git lfs pull
       - run:
           name: Install NPM modules

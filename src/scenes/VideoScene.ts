@@ -1,19 +1,16 @@
-import { SceneMapper } from 'SceneMapper';
 import {
   LinearFilter,
   Mesh,
   MeshBasicMaterial,
-  Object3D,
   PlaneBufferGeometry,
   RGBFormat,
   Texture,
   VideoTexture,
 } from 'three';
-import ModelLoader from './ModelLoader';
+import { AbstractScene } from './AbstractScene';
 
-export class VideoScene implements SceneMapper {
+export class VideoScene extends AbstractScene {
   private texture: Texture;
-  private videoMesh: Object3D;
 
   async loadModel() {
     const geometry = new PlaneBufferGeometry(2, 2, 4, 4);
@@ -28,21 +25,13 @@ export class VideoScene implements SceneMapper {
 
       let videoMesh = new Mesh(geometry, material);
       videoMesh.rotation.x = -Math.PI / 2;
-      this.videoMesh = videoMesh;
-      this.videoMesh.name = 'VideoScene';
-      return this.videoMesh;
+      this.model = videoMesh;
+      this.model.name = 'VideoScene';
+      return this.model;
     });
   }
 
-  update() {}
-
-  hasModel() {
-    return !!this.videoMesh;
-  }
-
-  getModel() {
-    return this.videoMesh;
-  }
+  update = () => {};
 
   getTexture() {
     return this.texture;

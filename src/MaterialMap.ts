@@ -54,7 +54,7 @@ class MaterialMap {
         const arMarkerControls = new THREEx.ArMarkerControls(context, markerRoot, {
           type: 'pattern',
           patternUrl: `assets/Patts/${values.pattern}.patt`,
-          minConfidence: 0.2,
+          minConfidence: 0.6,
         });
         this.sceneControls[`${arMarkerControls.id}`] = {
           matMap: values,

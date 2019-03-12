@@ -1,5 +1,4 @@
 import {
-  Object3D,
   CubeGeometry,
   Texture,
   RepeatWrapping,
@@ -10,13 +9,12 @@ import {
   Group,
 } from 'three';
 import ModelLoader from './ModelLoader';
-import { SceneMapper } from 'SceneMapper';
+import { AbstractScene } from './AbstractScene';
 
-export class MeshesScene implements SceneMapper {
+export class MeshesScene extends AbstractScene {
   ASSET_URL = 'assets/Textures/tile4b.gif';
 
   private texture: Texture;
-  private meshes: Object3D;
 
   async loadModel() {
     // the invisibility cloak (ring; has square hole)
@@ -45,18 +43,10 @@ export class MeshesScene implements SceneMapper {
 
       const group = new Group();
       group.add(mesh1, mesh0);
-      this.meshes = group;
-      this.meshes.name = 'MeshesScene';
-      return this.meshes;
+      this.model = group;
+      this.model.name = 'MeshesScene';
+      return this.model;
     });
-  }
-
-  hasModel() {
-    return !!this.meshes;
-  }
-
-  getModel() {
-    return this.meshes;
   }
 
   getTexture() {

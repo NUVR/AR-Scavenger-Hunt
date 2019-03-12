@@ -1,12 +1,11 @@
-import { SceneMapper } from 'SceneMapper';
-import { Object3D, Texture, CubeGeometry, MeshBasicMaterial, BackSide, Mesh } from 'three';
+import { Texture, CubeGeometry, MeshBasicMaterial, BackSide, Mesh } from 'three';
 import ModelLoader from './ModelLoader';
+import { AbstractScene } from './AbstractScene';
 
-export class MovieScene implements SceneMapper {
+export class MovieScene extends AbstractScene {
   ASSET_URL = 'assets/Textures/BeeMovieScript.png';
 
   private texture: Texture;
-  private script: Object3D;
 
   async loadModel() {
     const geometry = new CubeGeometry(2, 0.25, 8);
@@ -24,27 +23,19 @@ export class MovieScene implements SceneMapper {
       script.position.z = 4;
       script.rotation.y += Math.PI;
       script.scale.x = -1;
-      this.script = script;
-      this.script.name = 'MovieScene';
-      return this.script;
+      this.model = script;
+      this.model.name = 'MovieScene';
+      return this.model;
     });
   }
 
-  update() {
-    if (this.script.position.z < -4) {
-      this.script.position.z = 4;
+  update = () => {
+    if (this.model.position.z < -4) {
+      this.model.position.z = 4;
     } else {
-      this.script.position.z -= 0.0025;
+      this.model.position.z -= 0.0025;
     }
-  }
-
-  hasModel() {
-    return !!this.script;
-  }
-
-  getModel() {
-    return this.script;
-  }
+  };
 
   getTexture() {
     return this.texture;

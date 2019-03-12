@@ -1,43 +1,28 @@
 import { THREEx } from 'ar';
-import { AmbientLight, Camera, Clock, PointLight, Scene, WebGLRenderer } from 'three';
+import { WebGLRenderer } from 'three';
 import './style.scss';
 import MaterialMap from './MaterialMap';
+import SceneBuilder from './SceneBuilder';
 
 const { ArToolkitSource, ArToolkitContext } = THREEx;
 
 class RootScene {
   renderer: WebGLRenderer;
-  clock: Clock;
-  camera: Camera;
-  scene: Scene;
+  scene = SceneBuilder;
 
   arToolkitContext: THREEx.ArToolkitContext;
   arToolkitSource: THREEx.ArToolkitSource;
   arMarkerControls: THREEx.ArMarkerControls[];
 
   constructor() {
+    this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
     this.arMarkerControls = [];
-    this.buildScene();
+    this.buildAr();
     this.buildDom();
     this.initModels();
   }
 
-  buildScene = () => {
-    this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
-    this.clock = new Clock();
-
-    this.camera = new Camera();
-    const scene = new Scene();
-    scene.add(this.camera);
-    scene.visible = true;
-    this.scene = scene;
-
-    const light = new AmbientLight(0x404040);
-    const ptLight = new PointLight(0xffffff);
-    ptLight.position.set(3, 4, 7);
-    scene.add(light);
-    scene.add(ptLight);
-
+  buildAr = () => {
     this.arToolkitContext = new ArToolkitContext({
       cameraParametersUrl: 'assets/camera_para.dat',
       detectionMode: 'mono',
@@ -56,7 +41,7 @@ class RootScene {
     container.appendChild(this.renderer.domElement);
 
     this.arToolkitContext.init(() =>
-      this.camera.projectionMatrix.copy(this.arToolkitContext.getProjectionMatrix())
+      this.scene.camera.projectionMatrix.copy(this.arToolkitContext.getProjectionMatrix())
     );
     this.arToolkitSource.init(container, this.onResize);
     window.addEventListener('resize', this.onResize);
@@ -70,16 +55,9 @@ class RootScene {
     }
   };
 
-  render = () => {
-    requestAnimationFrame(this.render);
-    this.renderer.render(this.scene, this.camera);
-
-    const delta = this.clock.getDelta();
-    MaterialMap.getActiveScenes().map(scene => {
-      if (scene.update) {
-        scene.update(delta);
-      }
-    });
+  animate = () => {
+    requestAnimationFrame(this.animate);
+    this.scene.render(this.renderer);
 
     if (this.arToolkitSource.ready) {
       this.arToolkitContext.update(this.arToolkitSource.domElement);
@@ -95,7 +73,7 @@ class RootScene {
   loadMarkers = () => {
     const markerRoots = MaterialMap.mapMarkers(this.arToolkitContext);
     markerRoots.map(markerRoot => this.scene.add(markerRoot));
-    this.render();
+    this.animate();
     console.log(this.scene);
   };
 }
